@@ -24,385 +24,368 @@
 <meta name="citation_author" content="Bhattad, Anand">
 <meta name="citation_author" content="Rehg, James Matthew">
 <meta name="citation_publication_date" content="2026">
+
+<!-- Same fonts, stylesheets and icon set as the BudgetPix page (https://karaozgur.com/BudgetPix/) -->
 <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
 <link rel="stylesheet" href="static/css/bulma.min.css">
+<link rel="stylesheet" href="static/css/bulma-slider.min.css">
 <link rel="stylesheet" href="static/css/index.css">
-<style>
-  /* Page layout follows the BudgetPix project page (same template, same index.css): ruled section titles, alternating
-     white / light bands, a framed teaser, and tabbed slideshows with arrows, dots and a counter. */
-  :root { color-scheme: light; }
-  body { background: #fff; color: #4a4a4a; }
-  [hidden] { display: none !important; }
-  img { max-width: 100%; }
-  .icon svg { width: 1em; height: 1em; fill: currentColor; }
-  .publication-authors .name { color: hsl(204, 86%, 53%); }
-  .button.is-soon { opacity: .5; pointer-events: none; }
-  #lost .hr-lines:before, #lost .hr-lines:after { width: 14%; }
-  #diagnosis .hr-lines:before, #diagnosis .hr-lines:after { width: 18%; }
-  #videos .hr-lines:before, #videos .hr-lines:after, #images .hr-lines:before, #images .hr-lines:after { width: 28%; }
+<script defer src="static/js/fontawesome.all.min.js"></script>
 
-  /* slideshows */
+<style>
+  /* From the BudgetPix page: the dial controls, slideshows, results panels and figure captions */
   .demo-box { max-width: 900px; margin: 0 auto; }
+  .dial-readout { font-family: 'Google Sans', sans-serif; font-size: 1.2rem; white-space: nowrap; }
+  .dial-readout small { font-size: 0.8rem; color: #555; }
+  .slider { margin: 0 !important; }
+  .demo-note { font-size: 0.78rem; color: #555; margin-top: 0.6rem; }
+  .hero.is-light .tabs.is-toggle a { color: #4a4a4a; background: #fff; border-color: #dbdbdb; }
+  .hero.is-light .tabs.is-toggle li.is-active a { color: #fff; background: #3273dc; border-color: #3273dc; }
   .slideshow { position: relative; }
-  .ss-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; line-height: 34px; border-radius: 50%;
-    background: rgba(0,0,0,.42); color: #fff; font-size: 15px; text-align: center; cursor: pointer; user-select: none; z-index: 2; }
+  .ss-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; line-height: 34px; border-radius: 50%; background: rgba(0,0,0,.42); color: #fff; font-size: 15px; text-align: center; cursor: pointer; user-select: none; z-index: 2; }
   .ss-arrow:hover { background: rgba(0,0,0,.78); color: #fff; }
   .ss-arrow.prev { left: -46px; } .ss-arrow.next { right: -46px; }
-  .ss-dots { margin-top: .55rem; line-height: 1; }
+  .ss-dots { margin-top: 0.55rem; line-height: 1; }
   .ss-dot { display: inline-block; width: 7px; height: 7px; margin: 0 2px; border-radius: 50%; background: #cfcfcf; cursor: pointer; vertical-align: middle; }
   .ss-dot.on { background: #363636; }
-  .ss-count { font-size: .72rem; color: #777; margin-left: 8px; vertical-align: middle; }
-  .demo-note { font-size: .78rem; color: #555; margin-top: .6rem; }
-  .cap-line { font-size: .85rem; color: #555; margin-top: .45rem; font-style: italic; }
-  .hero.is-light .tabs.is-toggle a { color: #4a4a4a; background: #fff; border-color: #dbdbdb; }
-  .tabs.is-toggle li.is-active a, .hero.is-light .tabs.is-toggle li.is-active a { color: #fff; background: #3273dc; border-color: #3273dc; }
-  .columns > .column, .demo-box, .slideshow { min-width: 0; }
-  .tabs { margin-bottom: .9rem !important; }
-
-  /* image slides: student grid and ReDiverse grid, the same noise at the same position */
-  .img-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .img-pair figure { margin: 0; min-width: 0; }
-  .hd { font-size: .8rem; font-weight: 600; color: #555; margin-bottom: .3rem; text-align: left; }
-  .hd.ours { color: #000; }
-  .g6 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
-  .g6 img { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 4px; background: #ececec; display: block; cursor: zoom-in; }
-  .img-pair figure.ours .g6 { outline: 2px solid #363636; outline-offset: 3px; border-radius: 4px; }
-
-  /* video slides: the student row above the ReDiverse row, one seed per column */
-  .vid-scroll { overflow-x: auto; }
-  .vid-rows { display: grid; grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); gap: 4px; }
-  .vid-rows .hd { grid-column: 1 / -1; margin: .25rem 0 .1rem; }
-  .vid-rows video { width: 100%; height: auto; aspect-ratio: var(--ar, 1.75); border-radius: 4px; background: #ececec; display: block; }
-
-  /* figures, tables, results boxes (as on BudgetPix) */
-  .method-fig { width: 100%; max-width: 820px; height: auto; margin: 0 auto; display: block; }
-  .fig-cap { font-size: .92rem; color: #363636; text-align: justify; margin: .4rem auto 1.6rem; max-width: 820px; }
-  .res-panel { padding: 1rem 1.2rem .9rem; margin: 0 auto 1.1rem; max-width: 900px; text-align: left; }
-  .res-panel .res-title { font-family: 'Google Sans', sans-serif; font-weight: 600; font-size: 1rem; margin-bottom: .5rem;
-    display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
-  .res-panel .res-enl { font-family: 'Noto Sans', sans-serif; font-weight: 400; font-size: .78rem; color: #555; white-space: nowrap; }
+  .ss-count { font-size: 0.72rem; color: #777; margin-left: 8px; vertical-align: middle; }
+  @media (max-width: 1040px) { .ss-arrow.prev { left: 6px; } .ss-arrow.next { right: 6px; } }
+  @media (max-width: 520px) {
+    .demo-box .columns.is-mobile { flex-wrap: wrap; }
+    .demo-box .columns.is-mobile > .column:nth-child(3) { order: 9; flex: 1 1 100%; padding-top: 0; }
+    .dial-readout { font-size: 1rem; }
+  }
+  .res-panel { padding: 1rem 1.2rem 0.9rem; margin: 0 auto 1.1rem; max-width: 900px; text-align: left; }
+  .res-panel .res-title { font-family: 'Google Sans', sans-serif; font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+  .res-panel .res-enl { font-family: 'Noto Sans', sans-serif; font-weight: 400; font-size: 0.78rem; color: #555; white-space: nowrap; }
   .res-panel .res-enl:hover { color: #000; }
   .res-panel .res-img { display: flex; justify-content: center; cursor: zoom-in; }
   .res-panel .res-img img { width: 100%; height: auto; }
-  .res-panel .res-cap { font-size: .85rem; color: #555; margin-top: .6rem; }
+  .res-panel .res-cap { font-size: 0.85rem; color: #555; margin-top: 0.6rem; }
+  .fig-cap { font-size: 0.92rem; color: #363636; text-align: justify; margin: 0.4rem auto 1.6rem; max-width: 820px; }
+  .method-fig { width: 100%; max-width: 820px; height: auto; margin: 0 auto; display: block; }
+  .modal-content img { max-height: 88vh; width: auto; margin: 0 auto; display: block; background: #fff; border-radius: 6px; }
+
+  /* ReDiverse additions, in the same style */
+  .button.is-soon { opacity: .5; pointer-events: none; }
+  .publication-authors .name { color: hsl(204, 86%, 53%); }
+  .columns > .column, .demo-box, .slideshow { min-width: 0; }
+  #videos .hr-lines:before, #videos .hr-lines:after, #images .hr-lines:before, #images .hr-lines:after { width: 28%; }
+  #compare .hr-lines:before, #compare .hr-lines:after { width: 24%; }
+  #diagnosis .hr-lines:before, #diagnosis .hr-lines:after { width: 18%; }
+  #lost .hr-lines:before, #lost .hr-lines:after { width: 14%; }
+  .cap-line { font-size: 0.8rem; color: #555; margin-top: 0.35rem; font-style: italic; }
+  .hd { font-size: 0.78rem; font-weight: 600; color: #363636; text-align: left; }
+  .hd.ours { color: #000; }
+  /* the student-to-ReDiverse dial: every tile is one initial noise; ReDiverse's sample is wiped in over the student's */
+  .wipe { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 0.5rem; }
+  .wipe .tile { position: relative; aspect-ratio: 1 / 1; border-radius: 4px; overflow: hidden; background: #ececec; cursor: zoom-in; }
+  .wipe img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .wipe img.b { clip-path: inset(0 calc(100% - var(--v, 0%)) 0 0); }
+  .wipe .bar { position: absolute; top: 0; bottom: 0; left: var(--v, 0%); width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 3px rgba(0,0,0,.55); pointer-events: none; }
+  .wipe.at-end .bar { display: none; }
+  /* video slides: the student row above the ReDiverse row, one seed per column */
+  .hscroll { overflow-x: auto; }
+  .vid-rows { display: grid; grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); gap: 4px; margin-top: 0.5rem; }
+  .vid-rows .hd { grid-column: 1 / -1; margin: 0.15rem 0 0; }
+  .vid-rows video { width: 100%; height: auto; aspect-ratio: var(--ar, 1.75); border-radius: 4px; background: #ececec; display: block; }
+  /* method comparison: one row per method, one seed per column */
+  .cmp-rows { display: grid; grid-template-columns: 7.4rem repeat(var(--n, 6), minmax(0, 1fr)); gap: 4px 4px; align-items: center; margin-top: 0.5rem; }
+  .cmp-rows .rl { font-size: 0.78rem; font-weight: 600; color: #363636; text-align: right; padding-right: 0.45rem; line-height: 1.2; }
+  .cmp-rows .rl.ours { color: #000; }
+  .cmp-rows img, .cmp-rows video { width: 100%; height: auto; display: block; border-radius: 4px; background: #ececec; }
+  .cmp-rows img { aspect-ratio: 1 / 1; object-fit: cover; cursor: zoom-in; }
+  .cmp-rows video { aspect-ratio: var(--ar, 1.75); }
+  .cmp-rows img.ours, .cmp-rows video.ours { outline: 2px solid #363636; outline-offset: -2px; }
   .side { display: grid; grid-template-columns: 1.15fr .85fr; gap: 1.6rem; align-items: center; text-align: left; }
   .side > * { min-width: 0; }
   .table-wrap { overflow-x: auto; }
-  .table { font-variant-numeric: tabular-nums; font-size: .92rem; margin: 0 auto !important; }
-  .table th, .table td { text-align: center !important; white-space: nowrap; padding: .45em 1em; }
+  .table { font-variant-numeric: tabular-nums; font-size: 0.92rem; margin: 0 auto !important; }
+  .table th, .table td { text-align: center !important; white-space: nowrap; padding: 0.45em 1em; }
   .table th:first-child, .table td:first-child { text-align: left !important; }
-  .table tr.ours td { font-weight: 700; color: #000; background: #f3f6fb; }
+  .table tr.ours td { font-weight: 700; color: #000; }
   .table tr.ref td { color: #7a7a7a; font-style: italic; }
   #BibTeX pre { white-space: pre; overflow-x: auto; }
-  .copy-bib { float: right; font-size: .78rem; color: #555; cursor: pointer; background: none; border: 0; padding: .3rem 0; }
-  .copy-bib:hover { color: #000; }
   .modal-content { width: auto; max-width: 92vw; }
-  .modal-content img { max-height: 86vh; width: auto; margin: 0 auto; display: block; background: #fff; border-radius: 6px; }
-  .modal-content p { color: #eee; text-align: center; font-size: .85rem; margin-top: .5rem; }
-
-  @media (max-width: 1040px) { .ss-arrow.prev { left: 6px; } .ss-arrow.next { right: 6px; } }
+  .modal-content p { color: #eee; text-align: center; font-size: 0.85rem; margin-top: 0.5rem; }
   @media (max-width: 768px) {
-    .hero-body { padding-left: 16px; padding-right: 16px; }
     .side { grid-template-columns: 1fr; }
     .vid-rows { grid-template-columns: repeat(var(--n, 5), minmax(132px, 1fr)); }
+    .cmp-rows { grid-template-columns: 5.4rem repeat(var(--n, 6), minmax(92px, 1fr)); }
     .hr-lines:before, .hr-lines:after { display: none; }
   }
-  @media (max-width: 560px) { .img-pair { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="xtitle is-1 publication-title" style="font-size: 200%; font-weight: 800;">Restoring Diversity in Distilled Image and Video Generators by Probing Activations</h1>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><span class="name">Furkan Horoz</span><sup>1</sup></span>
-            <span class="author-block"><a href="https://karaozgur.com/" target="_blank" rel="noopener">Ozgur Kara</a><sup>1</sup></span>
-            <span class="author-block"><span class="name">Kaan Oktay</span><sup>2</sup></span>
-            <span class="author-block"><span class="name">Adil Kaan Akan</span><sup>2</sup></span>
-            <span class="author-block"><span class="name">Atakan Kara</span><sup>2</sup></span>
-            <span class="author-block"><span class="name">Anand Bhattad</span><sup>3,†</sup></span>
-            <span class="author-block"><a href="https://scholar.google.com/citations?user=8kA3eDwAAAAJ&amp;hl=en" target="_blank" rel="noopener">James Matthew Rehg</a><sup>1,†</sup></span>
-          </div>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>University of Illinois Urbana-Champaign</span>
-            <span class="author-block"><sup>2</sup>fal</span>
-            <span class="author-block"><sup>3</sup>Johns Hopkins University</span><br><b>Preprint, 2026</b>
-            <span class="eql-cntrb"><small><br><sup>†</sup>Equal advising.</small></span>
-          </div>
-
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
           <div class="column has-text-centered">
-            <div class="publication-links">
-              <span class="link-block">
-                <span class="external-link button is-normal is-rounded is-dark is-soon" title="The paper link is added at release">
-                  <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8 12h10v1.6H8V12zm0 3.4h10V17H8v-1.6z"/></svg></span><span>Paper (soon)</span>
+            <h1 class="xtitle is-1 publication-title" style="font-size: 200%; font-weight: 800;">Restoring Diversity in Distilled Image and Video Generators by Probing Activations</h1>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><span class="name">Furkan Horoz</span><sup>1</sup></span>
+              <span class="author-block"><a href="https://karaozgur.com/" target="_blank">Ozgur Kara</a><sup>1</sup></span>
+              <span class="author-block"><span class="name">Kaan Oktay</span><sup>2</sup></span>
+              <span class="author-block"><span class="name">Adil Kaan Akan</span><sup>2</sup></span>
+              <span class="author-block"><span class="name">Atakan Kara</span><sup>2</sup></span>
+              <span class="author-block"><span class="name">Anand Bhattad</span><sup>3,†</sup></span>
+              <span class="author-block"><a href="https://scholar.google.com/citations?user=8kA3eDwAAAAJ&hl=en" target="_blank">James Matthew Rehg</a><sup>1,†</sup></span>
+            </div>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>University of Illinois Urbana-Champaign</span>
+              <span class="author-block"><sup>2</sup>fal</span>
+              <span class="author-block"><sup>3</sup>Johns Hopkins University</span><br><b>Preprint, 2026</b>
+              <span class="eql-cntrb"><small><br><sup>†</sup>Equal advising.</small></span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <span class="external-link button is-normal is-rounded is-dark is-soon" title="The paper link is added at release">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper (soon)</span>
+                  </span>
                 </span>
-              </span>
-              <span class="link-block">
-                <a class="external-link button is-normal is-rounded is-dark" href="https://github.com/H-furkan/rediverse" target="_blank" rel="noopener">
-                  <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.7 5.38-5.27 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg></span><span>Code</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a class="external-link button is-normal is-rounded is-dark" href="https://huggingface.co/Fo-zh/ReDiverse" target="_blank" rel="noopener">
-                  <span class="icon">&#129303;</span><span>Models</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="#BibTeX" class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h5v5H8c0 2 1 3 3 3v2c-3.5 0-5-2-5-5V7zm8 0h5v5h-3c0 2 1 3 3 3v2c-3.5 0-5-2-5-5V7z"/></svg></span><span>BibTeX</span>
-                </a>
-              </span>
+                <span class="link-block">
+                  <a class="external-link button is-normal is-rounded is-dark" href="https://github.com/H-furkan/rediverse" target="_blank">
+                    <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a class="external-link button is-normal is-rounded is-dark" href="https://huggingface.co/Fo-zh/ReDiverse" target="_blank">
+                    <span class="icon">&#129303;</span><span>Models</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="#BibTeX" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-quote-right"></i></span><span>BibTeX</span>
+                  </a>
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Teaser: the overview video -->
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body" style="padding-top: 1.5rem;">
-      <video id="teaser" poster="assets/demo/rediverse_overview.jpg" autoplay muted loop playsinline controls preload="metadata" width="1920" height="1080"
-        aria-label="Overview video of ReDiverse" style="width: 100%; max-width: 800px; height: auto; display: block; margin: 0 auto; border-radius: 10px; border: 1px solid #dbdbdb;">
-        <source src="assets/demo/rediverse_overview.mp4" type="video/mp4">
-      </video>
-      <h2 class="subtitle has-text-centered is-6" style="margin-top: 0.8rem; max-width: 820px; margin-left: auto; margin-right: auto;"><b>Diversity back in
-        few-step generators.</b> Few-step students keep (or even exceed) their teachers' activation variance but squeeze it into fewer directions,
-        starting at one intermediate block of the first denoising step. ReDiverse puts the missing directions back with a short fine-tune
-        (ReDiverse-FT), with no training at all (ReDiverse-TF), or with both. The overview is silent.</h2>
-    </div>
-  </div>
-</section>
-
-<!-- Abstract -->
-<section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3 hr-lines">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>Distilling diffusion models into few-step student models substantially reduces sampling latency, but induces severe diversity
-            collapse: samples generated from different random seeds show minimal variation. In this work, we investigate the root cause of this
-            failure by probing the internal representations of student models relative to their teachers. We find that distilled students
-            maintain total activation variance comparable to their teachers, but concentrate it into substantially fewer directions. This
-            directional collapse is localized to an identifiable intermediate block at the initial denoising step. Consequently, diversity
-            collapse stems from a misallocation of activation variance rather than an inherent loss of generative capacity. Guided by this
-            finding, we propose ReDiverse to reinstate the missing variance directions. At training time, ReDiverse-FT fine-tunes a
-            lightweight adapter that regresses student activations onto the teacher's, reviving the teacher's feature variance characteristic.
-            At inference time, ReDiverse-TF introduces a training-free mechanism that steers activations along precomputed teacher
-            principal directions. Across image and video distillation benchmarks, ReDiverse consistently restores sample diversity while
-            preserving generation quality, further supported by the user study.</p>
-        </div>
+  <!-- Teaser video -->
+  <section class="hero teaser">
+    <div class="container is-max-desktop">
+      <div class="hero-body" style="padding-top: 1.5rem;">
+        <video id="teaser" poster="assets/demo/rediverse_overview.jpg" autoplay muted loop playsinline controls preload="metadata" style="width: 100%; max-width: 800px; display: block; margin: 0 auto; border-radius: 10px; border: 1px solid #dbdbdb;">
+          <source src="assets/demo/rediverse_overview.mp4" type="video/mp4">
+        </video>
+        <h2 class="subtitle has-text-centered is-6" style="margin-top: 0.8rem; max-width: 820px; margin-left: auto; margin-right: auto;"><b>Diversity back in few-step generators.</b> Few-step students keep (or even exceed) their teachers' activation variance but squeeze it into fewer directions, starting at one intermediate block of the first denoising step. ReDiverse puts the missing directions back with a short fine-tune (ReDiverse-FT), with no training at all (ReDiverse-TF), or with both.</h2>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Video results -->
-<section class="hero is-small" id="videos">
-  <div class="hero-body">
+  <!-- Abstract -->
+  <section class="section hero is-light">
     <div class="container is-max-desktop">
       <div class="columns is-centered has-text-centered">
-        <div class="column">
-          <h2 class="title is-3 hr-lines">Video Results</h2>
-          <div class="content"><p>Each 4-step student repeats one composition for a prompt. ReDiverse, started from the same noises, changes the
-            subject, the setting and the camera. Every column starts from the same initial noise in both rows.</p></div>
-          <div class="demo-box" id="w-videos"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Image results -->
-<section class="hero is-small is-light" id="images">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered has-text-centered">
-        <div class="column">
-          <h2 class="title is-3 hr-lines">Image Results</h2>
-          <div class="content"><p>Six samples per prompt from the 4-step student and from ReDiverse. The same position in both grids starts from the
-            same initial noise. Click any image to view it at full resolution.</p></div>
-          <div class="demo-box" id="w-images"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Diagnosis -->
-<section class="hero is-small" id="diagnosis">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered has-text-centered">
-        <div class="column">
-          <h2 class="title is-3 hr-lines">Same Variance, Fewer Directions</h2>
+        <div class="column is-four-fifths">
+          <h2 class="title is-3 hr-lines">Abstract</h2>
           <div class="content has-text-justified">
-            <p>We give the same noises to a teacher and its 4-step student, run their first denoising step, and look at the activations of every
-              block across noises. Three quantities describe that cloud: its <b>total variance</b>, its <b>participation ratio</b> (how many
-              directions the variance effectively spans), and the <b>concentration</b> (variance per direction). Early blocks match. At an
-              intermediate block, the <b>collapsed block ℓ</b>, the student keeps or even amplifies the total variance, but spans far fewer
-              directions, and the collapse propagates to the output.</p>
-          </div>
-          <div class="box res-panel">
-            <p class="res-title"><span>Variance characteristic along the depth, SDXL and Wan 2.1</span><a class="res-enl" href="assets/fig/probe_depth.png" target="_blank">&#x26F6;&nbsp; enlarge</a></p>
-            <div class="res-img"><img src="assets/fig/probe_depth.png" alt="Participation ratio, total variance and concentration of teacher and student at every block of SDXL and Wan 2.1" loading="lazy" width="2000" height="590"></div>
-            <p class="res-cap">Participation ratio, total variance and concentration of teacher and student activations at every layer, for (a) an
-              image model (SDXL) and (b) a video model (Wan 2.1). Total variance and concentration are min–max normalized to [0, 1] over teacher
-              and student (SDXL's in log space). The vertical line marks the collapsed block.</p>
-          </div>
-          <div class="box res-panel">
-            <p class="res-title"><span>Student / teacher ratios at the collapsed block ℓ</span></p>
-            <div class="table-wrap">
-              <table class="table is-narrow">
-                <thead><tr><th>Student</th><th>Participation ratio</th><th>Total variance</th><th>Concentration</th></tr></thead>
-                <tbody>
-                  <tr><td>DMD2 (SDXL)</td><td>0.40</td><td>1.63</td><td>4.76</td></tr>
-                  <tr><td>TDM (SD3)</td><td>0.49</td><td>1.03</td><td>2.68</td></tr>
-                  <tr><td>lightx2v (Wan 2.1)</td><td>0.60</td><td>1.41</td><td>2.54</td></tr>
-                  <tr><td>Turbo (MiniMax-H3)</td><td>0.37</td><td>2.92</td><td>8.08</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <p class="res-cap">Every student spans fewer directions than its teacher (ratio below 1) while keeping or raising the total variance.</p>
+            <p>Distilling diffusion models into few-step student models substantially reduces sampling latency, but induces severe diversity collapse: samples generated from different random seeds show minimal variation. In this work, we investigate the root cause of this failure by probing the internal representations of student models relative to their teachers. We find that distilled students maintain total activation variance comparable to their teachers, but concentrate it into substantially fewer directions. This directional collapse is localized to an identifiable intermediate block at the initial denoising step. Consequently, diversity collapse stems from a misallocation of activation variance rather than an inherent loss of generative capacity. Guided by this finding, we propose ReDiverse to reinstate the missing variance directions. At training time, ReDiverse-FT fine-tunes a lightweight adapter that regresses student activations onto the teacher's, reviving the teacher's feature variance characteristic. At inference time, ReDiverse-TF introduces a training-free mechanism that steers activations along precomputed teacher principal directions. Across image and video distillation benchmarks, ReDiverse consistently restores sample diversity while preserving generation quality, further supported by the user study.</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Steering -->
-<section class="hero is-small is-light" id="lost">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered has-text-centered">
-        <div class="column">
-          <h2 class="title is-3 hr-lines">The Lost Directions Are Still Decodable</h2>
-          <div class="side">
+  <!-- Video results -->
+  <section class="hero is-small" id="videos">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column">
+            <h2 class="title is-3 hr-lines">Video Results</h2>
+            <div class="content"><p>A 4-step video student repeats one composition for a prompt. ReDiverse, started from the same noises, changes the subject, the setting and the camera. Every column starts from the same initial noise in both rows.</p></div>
+            <div class="demo-box" id="w-videos"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Image results, with the student-to-ReDiverse dial -->
+  <section class="hero is-small is-light" id="images">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column">
+            <h2 class="title is-3 hr-lines">Image Results</h2>
+            <div class="content"><p>From collapsed to diverse: each tile is one initial noise. Slide from the 4-step student to ReDiverse, or press Sweep, and every sample changes from the student's version to ReDiverse's version of the same noise. Click a tile to view it at full resolution.</p></div>
+            <div class="demo-box" id="w-images"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method comparison -->
+  <section class="hero is-small" id="compare">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column">
+            <h2 class="title is-3 hr-lines">Method Comparison</h2>
+            <div class="content"><p>Every method starts from the same noises, one seed per column. Image baselines: DP-DMD, a re-distilled student whose first step is regressed toward the teacher, and Noise Optimization, an optimization-based reference that searches for initial noises maximizing a DINOv2 diversity score at test time. Video baseline: DFD, which post-trains the student with real videos.</p></div>
+            <div class="demo-box" id="w-compare"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Diagnosis -->
+  <section class="hero is-small is-light" id="diagnosis">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column">
+            <h2 class="title is-3 hr-lines">Same Variance, Fewer Directions</h2>
             <div class="content has-text-justified">
-              <p>We move the first-step activation at the collapsed block along a top principal direction, with growing strength. Moving the
-                teacher along its own direction changes framing, pose and scene. Injecting that same <b>teacher direction into the student</b>
-                produces the same structural changes, with no change to the student's weights. Moving the student along its own direction only
-                changes appearance, such as coat pattern and lighting.</p>
-              <p>The directions lost in distillation are the ones that set structure, and the student's later blocks can still render them.
-                Diversity collapse is a misallocation of variance, not a loss of capacity.</p>
+              <p>We give the same noises to a teacher and its 4-step student, run their first denoising step, and look at the activations of every block across noises. Three quantities describe that cloud: its <b>total variance</b>, its <b>participation ratio</b> (how many directions the variance effectively spans), and the <b>concentration</b> (variance per direction). Early blocks match. At an intermediate block, the <b>collapsed block ℓ</b>, the student keeps or even amplifies the total variance, but spans far fewer directions, and the collapse propagates to the output.</p>
             </div>
-            <div class="box res-panel" style="margin: 0;">
-              <div class="res-img"><img src="assets/fig/steering.jpg" alt="Steering SDXL along teacher and student directions" loading="lazy" width="900" height="1002"></div>
+            <div class="box res-panel">
+              <p class="res-title"><span>Variance characteristic along the depth, SDXL and Wan 2.1</span><a class="res-enl" href="assets/fig/probe_depth.png" target="_blank"><i class="fas fa-expand"></i>&nbsp; enlarge</a></p>
+              <div class="res-img"><img src="assets/fig/probe_depth.png" alt="Participation ratio, total variance and concentration of teacher and student at every block of SDXL and Wan 2.1" loading="lazy"></div>
+              <p class="res-cap">Participation ratio, total variance and concentration of teacher and student activations at every layer, for (a) an image model (SDXL) and (b) a video model (Wan 2.1). Total variance and concentration are min–max normalized to [0, 1] over teacher and student (SDXL's in log space). The vertical line marks the collapsed block.</p>
+            </div>
+            <div class="box res-panel">
+              <p class="res-title"><span>Student / teacher ratios at the collapsed block ℓ</span></p>
+              <div class="table-wrap">
+                <table class="table is-narrow">
+                  <thead><tr><th>Student</th><th>Participation ratio</th><th>Total variance</th><th>Concentration</th></tr></thead>
+                  <tbody>
+                    <tr><td>DMD2 (SDXL)</td><td>0.40</td><td>1.63</td><td>4.76</td></tr>
+                    <tr><td>TDM (SD3)</td><td>0.49</td><td>1.03</td><td>2.68</td></tr>
+                    <tr><td>lightx2v (Wan 2.1)</td><td>0.60</td><td>1.41</td><td>2.54</td></tr>
+                    <tr><td>Turbo (MiniMax-H3)</td><td>0.37</td><td>2.92</td><td>8.08</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="res-cap">Every student spans fewer directions than its teacher (ratio below 1) while keeping or raising the total variance.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Method -->
-<section class="hero is-small" id="method">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered has-text-centered">
-        <div class="column">
-          <h2 class="title is-3 hr-lines">Method</h2>
-          <div class="content"><p>ReDiverse restores the missing directions at the collapsed block ℓ, in the student's first step only. The two
-            parts can be used alone or together.</p></div>
-          <img class="method-fig" src="assets/fig/method_training.jpg" alt="ReDiverse-FT training diagram" loading="lazy" width="1200" height="615">
-          <p class="fig-cap"><b>ReDiverse-FT.</b> Teacher and student start from the same noise and prompt. A LoRA on the blocks up to ℓ regresses
-            the student's step-1 activation onto the teacher's activation at step τ. Each prompt comes with 16 noises, so matching noise by noise
-            transfers the teacher's variation; the LoRA is active only at the first step.</p>
-          <img class="method-fig" src="assets/fig/method_tf.jpg" alt="ReDiverse-TF inference diagram" loading="lazy" width="1200" height="615">
-          <p class="fig-cap"><b>ReDiverse-TF.</b> Training-free. For each prompt, PCA over the teacher's step-τ activations from N = 25 noises gives
-            directions u<sub>k</sub> and spreads s<sub>k</sub>. Each sample adds Σ<sub>k</sub> α<sub>k</sub> s<sub>k</sub> u<sub>k</sub>,
-            α<sub>k</sub> ~ U[−2, 2], to the student's activation at ℓ in step 1.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Quantitative results -->
-<section class="hero is-small is-light" id="results">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered has-text-centered">
-        <div class="column">
-          <h2 class="title is-3 hr-lines">Results</h2>
-          <div class="box res-panel">
-            <p class="res-title"><span>Sample diversity, DINO (×100, higher is more diverse)</span></p>
-            <div class="table-wrap">
-              <table class="table is-narrow">
-                <thead><tr><th>Method</th><th>SDXL</th><th>SD3</th><th>Wan 2.1</th><th>MiniMax-H3</th></tr></thead>
-                <tbody>
-                  <tr><td>Student (4 steps)</td><td>59.4</td><td>48.4</td><td>31.6</td><td>36.5</td></tr>
-                  <tr><td>ReDiverse-TF</td><td>60.1</td><td>53.8</td><td>34.6</td><td>42.2</td></tr>
-                  <tr><td>ReDiverse-FT</td><td>64.6</td><td>53.5</td><td>46.8</td><td>44.1</td></tr>
-                  <tr class="ours"><td>ReDiverse</td><td>65.0</td><td>60.1</td><td>52.2</td><td>50.9</td></tr>
-                  <tr class="ref"><td>Teacher (multi-step)</td><td>66.3</td><td>61.6</td><td>51.6</td><td>52.5</td></tr>
-                </tbody>
-              </table>
+  <!-- Steering -->
+  <section class="hero is-small" id="lost">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column">
+            <h2 class="title is-3 hr-lines">The Lost Directions Are Still Decodable</h2>
+            <div class="side">
+              <div class="content has-text-justified">
+                <p>We move the first-step activation at the collapsed block along a top principal direction, with growing strength. Moving the teacher along its own direction changes framing, pose and scene. Injecting that same <b>teacher direction into the student</b> produces the same structural changes, with no change to the student's weights. Moving the student along its own direction only changes appearance, such as coat pattern and lighting.</p>
+                <p>The directions lost in distillation are the ones that set structure, and the student's later blocks can still render them. Diversity collapse is a misallocation of variance, not a loss of capacity.</p>
+              </div>
+              <div class="box res-panel" style="margin: 0;">
+                <div class="res-img"><img src="assets/fig/steering.jpg" alt="Steering SDXL along teacher and student directions" loading="lazy"></div>
+              </div>
             </div>
-            <p class="res-cap">Mean pairwise DINO distance between samples of a prompt on GenEval (553 prompts × 100 seeds) and VBench (300 prompts ×
-              10 clips). All rows except the teacher sample in four steps. ReDiverse closes most of the gap to the multi-step teacher. Prompt
-              alignment stays close to the student (CLIPScore within 0.5 points on images), while reward-model scores drop on images; the paper
-              reports the full set of diversity and quality metrics and a user study.</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <button class="copy-bib" type="button">Copy</button>
-    <h2 class="title">BibTeX</h2>
-    <pre><code id="bibtex-code">@article{horoz2026rediverse,
+  <!-- Method -->
+  <section class="hero is-small is-light" id="method">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column">
+            <h2 class="title is-3 hr-lines">Method</h2>
+            <div class="content"><p>ReDiverse restores the missing directions at the collapsed block ℓ, in the student's first step only. The two parts can be used alone or together.</p></div>
+            <img class="method-fig" src="assets/fig/method_training.jpg" alt="ReDiverse-FT training diagram" loading="lazy">
+            <p class="fig-cap"><b>ReDiverse-FT.</b> Teacher and student start from the same noise and prompt. A LoRA on the blocks up to ℓ regresses the student's step-1 activation onto the teacher's activation at step τ. Each prompt comes with 16 noises, so matching noise by noise transfers the teacher's variation; the LoRA is active only at the first step.</p>
+            <img class="method-fig" src="assets/fig/method_tf.jpg" alt="ReDiverse-TF inference diagram" loading="lazy">
+            <p class="fig-cap"><b>ReDiverse-TF.</b> Training-free. For each prompt, PCA over the teacher's step-τ activations from N = 25 noises gives directions u<sub>k</sub> and spreads s<sub>k</sub>. Each sample adds Σ<sub>k</sub> α<sub>k</sub> s<sub>k</sub> u<sub>k</sub>, α<sub>k</sub> ~ U[−2, 2], to the student's activation at ℓ in step 1.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quantitative results -->
+  <section class="hero is-small" id="results">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column">
+            <h2 class="title is-3 hr-lines">Results</h2>
+            <div class="box res-panel">
+              <p class="res-title"><span>Sample diversity, DINO (×100, higher is more diverse)</span></p>
+              <div class="table-wrap">
+                <table class="table is-narrow">
+                  <thead><tr><th>Method</th><th>SDXL</th><th>SD3</th><th>Wan 2.1</th><th>MiniMax-H3</th></tr></thead>
+                  <tbody>
+                    <tr><td>Student (4 steps)</td><td>59.4</td><td>48.4</td><td>31.6</td><td>36.5</td></tr>
+                    <tr><td>ReDiverse-TF</td><td>60.1</td><td>53.8</td><td>34.6</td><td>42.2</td></tr>
+                    <tr><td>ReDiverse-FT</td><td>64.6</td><td>53.5</td><td>46.8</td><td>44.1</td></tr>
+                    <tr class="ours"><td>ReDiverse</td><td>65.0</td><td>60.1</td><td>52.2</td><td>50.9</td></tr>
+                    <tr class="ref"><td>Teacher (multi-step)</td><td>66.3</td><td>61.6</td><td>51.6</td><td>52.5</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="res-cap">Mean pairwise DINO distance between samples of a prompt on GenEval (553 prompts × 100 seeds) and VBench (300 prompts × 10 clips). All rows except the teacher sample in four steps. ReDiverse closes most of the gap to the multi-step teacher. Prompt alignment stays close to the student (CLIPScore within 0.5 points on images), while reward-model scores drop on images; the paper reports the full set of diversity and quality metrics and a user study.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@article{horoz2026rediverse,
   title   = {Restoring Diversity in Distilled Image and Video Generators by Probing Activations},
   author  = {Horoz, Furkan and Kara, Ozgur and Oktay, Kaan and Akan, Adil Kaan and Kara, Atakan
              and Bhattad, Anand and Rehg, James Matthew},
   journal = {arXiv preprint},
   year    = {2026}
 }</code></pre>
-  </div>
-</section>
+    </div>
+  </section>
 
-<footer class="footer">
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener">Academic
-            Project Page Template</a>. You are free to borrow the source of this website, we just ask that you link back to this page in the footer.
-            This website is licensed under a <a rel="license noopener" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>. You are free to borrow the source of this website, we just ask that you link back to this page in the footer. This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</footer>
+  </footer>
 
-<div class="modal" id="lightbox">
-  <div class="modal-background"></div>
-  <div class="modal-content"><img id="lbImg" alt=""><p id="lbCap"></p></div>
-  <button class="modal-close is-large" aria-label="close"></button>
-</div>
+  <div class="modal" id="lightbox">
+    <div class="modal-background"></div>
+    <div class="modal-content"><img id="lbImg" alt=""><p id="lbCap"></p></div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
 
 <script>
 (function(){
   const A = 'assets/';
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
   const reduceMotion = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const IDLE_MS = 8000, touch = st => { st.hold = Date.now() + IDLE_MS; };
+  const IDLE_MS = 8000, touch = st => { st.hold = Date.now() + IDLE_MS; };     // a manual step holds the automatic ones for a while
   let active = null;                       // the slideshow the arrow keys drive: the one last hovered or touched
 
-  /* Examples. Every comparison is seed-matched: column / position i is the same initial noise for the student and ReDiverse.
+  /* Examples. Every comparison is seed-matched: column / position i is the same initial noise for every method.
      Every ReDiverse sample is labelled "ReDiverse", whichever part of the method (FT, TF or both) produced it. */
   const H3 = { w: 1344, h: 768 }, WAN = { w: 832, h: 480 };
   const VIDS = [
@@ -429,6 +412,18 @@
       ['sd3_person', 'a photo of a person'], ['sd3_book', 'a photo of a book'], ['sd3_chair', 'a photo of a chair'],
       ['sd3_mouse', 'a photo of an orange computer mouse'], ['sd3_boat', 'a photo of a yellow boat']] },
   ];
+  const CMP = [
+    { name: 'SDXL', kind: 'img', n: 6, rows: [['student', '4-step student (DMD2)'], ['dpdmd', 'DP-DMD'], ['noiseopt', 'Noise Optimization'], ['rediverse', 'ReDiverse']],
+      items: [['sdxl_church', 'a church'], ['sdxl_globe', 'a globe'], ['sdxl_teapot', 'a teapot'], ['sdxl_dragon', 'a dragon']] },
+    { name: 'SD3', kind: 'img', n: 6, rows: [['student', '4-step student (TDM)'], ['dpdmd', 'DP-DMD'], ['noiseopt', 'Noise Optimization'], ['rediverse', 'ReDiverse']],
+      items: [['sd3_bed', 'a photo of a bed'], ['sd3_book', 'a photo of a book'], ['sd3_bottle', 'a photo of a bottle'], ['sd3_chair', 'a photo of a chair'],
+              ['sd3_handbag', 'a photo of a handbag']] },
+    { name: 'Wan 2.1', kind: 'vid', n: 5, size: WAN, rows: [['student', '4-step student (lightx2v)'], ['dfd', 'DFD'], ['rediverse', 'ReDiverse']],
+      items: [['wan_forest', 'a forest in autumn'], ['wan_fox', 'a fox running through the snow'], ['wan_dolphin', 'a dolphin jumping'], ['wan_carousel', 'a carousel spinning']] },
+    { name: 'MiniMax-H3', kind: 'vid', n: 5, size: H3, rows: [['student', '4-step student (Turbo)'], ['dfd', 'DFD'], ['rediverse', 'ReDiverse']],
+      items: [['h3_forest', 'a forest in autumn'], ['h3_candle', 'a candle flickering'], ['h3_penguin', 'a penguin walking on ice']] },
+  ];
+  const SHARED = new Set(['h3_forest', 'h3_candle', 'wan_forest', 'wan_carousel']);   // their student / ReDiverse clips are the Video Results files
 
   /* full-resolution viewer */
   const lb = document.getElementById('lightbox'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
@@ -437,8 +432,9 @@
   document.querySelectorAll('.res-img img').forEach(im => im.addEventListener('click', () => zoom(im.src, im.alt)));
   document.querySelectorAll('.res-enl').forEach(a => a.addEventListener('click', e => { e.preventDefault(); zoom(a.href, ''); }));
 
-  /* a tabbed slideshow: model tabs, prev / next arrows, dots with a counter, swipe, the arrow keys, and an optional automatic step */
-  function gallery(rootId, groups, render, note, ms){
+  /* a slideshow with model tabs (as on BudgetPix): prev / next arrows, dots with a counter, swipe, the arrow keys, an optional
+     automatic step every `ms`; the clips of the shown slide play only while it is on screen, and leaving a slide unloads them */
+  function gallery(rootId, groups, render, note, ms, dial){
     const root = document.getElementById(rootId), st = { g: 0, page: 0, hold: 0 };
     if (groups.length > 1){
       const tabs = el('div', 'tabs is-toggle is-rounded is-centered is-small'), ul = el('ul');
@@ -447,6 +443,7 @@
         li.appendChild(a); ul.appendChild(li); });
       tabs.appendChild(ul); root.appendChild(tabs);
     }
+    const ctl = dial ? dial(st) : null; if (ctl) root.appendChild(ctl.row);
     const wrap = el('div', 'slideshow'), stage = el('div'), cap = el('p', 'cap-line'), dots = el('div', 'ss-dots'), foot = el('p', 'demo-note');
     const prev = el('a', 'ss-arrow prev', '&#10094;'), next = el('a', 'ss-arrow next', '&#10095;');
     prev.title = 'previous'; next.title = 'next';
@@ -458,79 +455,133 @@
     wrap.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 40) go(st.page + (dx < 0 ? 1 : -1)); });
     const me = { st, go };
     root.addEventListener('mouseenter', () => active = me); root.addEventListener('touchstart', () => active = me, { passive: true });
-    let hover = false, seen = !window.IntersectionObserver;
+    let hover = false, seen = !window.IntersectionObserver, vids = [];
+    const playAll = on => vids.forEach(v => on ? v.play().catch(() => {}) : v.pause());
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hover = true; });
     wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hover = false; });
-    if (window.IntersectionObserver) new IntersectionObserver(es => { seen = es[0].isIntersecting; stage.dispatchEvent(new CustomEvent('seen', { detail: seen })); }, { threshold: 0.25 }).observe(wrap);
-    if (!reduceMotion && ms) setInterval(() => { if (seen && !hover && !document.hidden && !(st.hold > Date.now())) { st.page++; show(); } }, ms);
+    if (window.IntersectionObserver) new IntersectionObserver(es => { seen = es[0].isIntersecting; playAll(seen); if (ctl) ctl.seen(seen); }, { threshold: 0.3 }).observe(wrap);
+    if (!reduceMotion && ms) setInterval(() => { if (seen && !hover && !document.hidden && !(st.hold > Date.now()) && !(ctl && ctl.busy())) { st.page++; show(); } }, ms);
     function show(){
+      vids.forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
       const g = groups[st.g], n = g.items.length;
       st.page = ((st.page % n) + n) % n;
-      const [key, prompt] = g.items[st.page];
-      render(stage, g, key, prompt, () => seen);
-      cap.textContent = '“' + prompt + '”';
+      const it = g.items[st.page];
+      render(stage, g, it, ctl);
+      vids = [...stage.querySelectorAll('video')]; if (seen) playAll(true);
+      cap.textContent = '“' + it[1] + '”';
       dots.innerHTML = '';
       for (let i = 0; i < n; i++){ const d = el('span', 'ss-dot' + (i === st.page ? ' on' : '')); d.onclick = () => go(i); dots.appendChild(d); }
       dots.appendChild(el('span', 'ss-count', (st.page + 1) + ' / ' + n));
       foot.innerHTML = note(g);
-      const nx = g.items[(st.page + 1) % n][0]; if (render.warm) render.warm(g, nx);
+      if (render.warm) render.warm(g, g.items[(st.page + 1) % n]);
+      if (ctl) ctl.shown(g, seen);
     }
     show();
   }
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') lb.classList.remove('is-active');
-    if (!active || lb.classList.contains('is-active')) return;
+    if (!active || lb.classList.contains('is-active') || (document.activeElement && document.activeElement.tagName === 'INPUT')) return;
     if (e.key === 'ArrowLeft'){ active.go(active.st.page - 1); e.preventDefault(); }
     if (e.key === 'ArrowRight'){ active.go(active.st.page + 1); e.preventDefault(); }
   });
 
-  /* image slide: the student grid and the ReDiverse grid, six seeds each */
-  const warmed = new Set();
-  function imgSlide(stage, g, key, prompt){
-    const pair = el('div', 'img-pair');
-    [['student', `4-step student (${g.student})`, ''], ['rediverse', 'ReDiverse', 'ours']].forEach(([m, lab, cls]) => {
-      const f = el('figure', cls), grid = el('div', 'g6');
-      f.appendChild(el('div', 'hd ' + cls, lab));
-      for (let i = 0; i < 6; i++){
-        const im = el('img'); im.src = `${A}img/${key}/${m}_${i}.jpg`; im.width = 1024; im.height = 1024; im.decoding = 'async';
-        im.alt = `${lab}, seed ${i + 1}: ${prompt}`; im.onclick = () => zoom(im.src, im.alt); grid.appendChild(im);
-      }
-      f.appendChild(grid); pair.appendChild(f);
-    });
-    stage.replaceChildren(pair);
+  function clip(src, size, label){
+    const v = el('video'); v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.width = size.w; v.height = size.h;
+    v.src = src; v.setAttribute('aria-label', label); return v;
   }
-  imgSlide.warm = (g, key) => { if (warmed.has(key)) return; warmed.add(key);
-    ['student', 'rediverse'].forEach(m => { for (let i = 0; i < 6; i++){ const im = new Image(); im.src = `${A}img/${key}/${m}_${i}.jpg`; } }); };
 
-  /* video slide: the student row above the ReDiverse row; all ten clips restart together and play only while on screen */
-  let liveVids = [];
-  function vidSlide(stage, g, key, prompt, isSeen){
-    liveVids.forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
-    const sc = el('div', 'vid-scroll'), rows = el('div', 'vid-rows');
+  /* Video Results: the student row above the ReDiverse row; column i is noise i in both rows */
+  function vidSlide(stage, g, [key, prompt]){
+    const sc = el('div', 'hscroll'), rows = el('div', 'vid-rows');
     rows.style.setProperty('--n', 5); rows.style.setProperty('--ar', `${g.size.w} / ${g.size.h}`);
-    liveVids = [];
     [['student', `4-step student (${g.student})`, ''], ['rediverse', 'ReDiverse', 'ours']].forEach(([m, lab, cls]) => {
       rows.appendChild(el('div', 'hd ' + cls, lab));
-      for (let i = 0; i < 5; i++){
-        const v = el('video'); v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
-        v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.width = g.size.w; v.height = g.size.h;
-        v.src = `${A}vid/${key}/${m}_${i}.mp4`; v.setAttribute('aria-label', `${lab}, seed ${i + 1}: ${prompt}`);
-        rows.appendChild(v); liveVids.push(v);
-      }
+      for (let i = 0; i < 5; i++) rows.appendChild(clip(`${A}vid/${key}/${m}_${i}.mp4`, g.size, `${lab}, seed ${i + 1}: ${prompt}`));
     });
     sc.appendChild(rows); stage.replaceChildren(sc);
-    if (isSeen()) liveVids.forEach(v => v.play().catch(() => {}));
   }
 
-  const vNote = g => `ReDiverse on ${g.name} (4-step ${g.student} student) &nbsp;&middot;&nbsp; top: student, bottom: ReDiverse &nbsp;&middot;&nbsp; each column starts from the same noise`;
-  const iNote = g => `ReDiverse on ${g.name} (4-step ${g.student} student), 1024<sup>2</sup> &nbsp;&middot;&nbsp; the same position in both grids starts from the same noise`;
-  gallery('w-videos', VIDS, vidSlide, vNote, 0);
-  gallery('w-images', IMGS, imgSlide, iNote, 6000);
-  document.querySelector('#w-videos .slideshow > div').addEventListener('seen', e => liveVids.forEach(v => e.detail ? v.play().catch(() => {}) : v.pause()));
+  /* Image Results: the student-to-ReDiverse dial. 0 % shows the student's six samples, 100 % ReDiverse's six samples of the same
+     noises; in between, ReDiverse's sample is wiped in over the student's in every tile. Each new prompt starts at the student
+     and sweeps to ReDiverse once; the Sweep button sweeps back and forth until stopped. */
+  function wipeDial(st){
+    const row = el('div', 'columns is-vcentered is-mobile is-variable is-1'); row.style.marginBottom = '0';
+    row.innerHTML = `<div class="column is-narrow dial-readout"><span class="pct">0</span>% <small>ReDiverse</small></div>
+      <div class="column is-narrow"><span class="tag is-dark state">4-step student</span></div>
+      <div class="column"><input class="slider is-fullwidth is-dark is-small" step="1" min="0" max="100" value="0" type="range" aria-label="From the 4-step student to ReDiverse"></div>
+      <div class="column is-narrow"><button class="button is-rounded is-dark is-small play" type="button"><span class="icon is-small"><i class="fas fa-play"></i></span><span>Sweep</span></button></div>`;
+    const sl = row.querySelector('.slider'), pct = row.querySelector('.pct'), tag = row.querySelector('.state');
+    const play = row.querySelector('.play'), lab = play.querySelector('span:last-child');      // Font Awesome swaps <i> for <svg>: touch the label only
+    let v = 0, raf = null, sweeping = false, token = 0, grid = null, student = 'student';
+    const paint = () => { if (!grid) return; grid.style.setProperty('--v', v + '%'); grid.classList.toggle('at-end', v <= 0 || v >= 100); };
+    const set = x => { v = Math.round(Math.max(0, Math.min(100, x)) * 10) / 10; sl.value = v; pct.textContent = Math.round(v);
+      tag.textContent = v <= 0 ? `4-step student (${student})` : v >= 100 ? 'ReDiverse' : 'student → ReDiverse'; paint(); };
+    const halt = () => { token++; if (raf) cancelAnimationFrame(raf); raf = null; };
+    const stopSweep = () => { sweeping = false; lab.textContent = 'Sweep'; };
+    const animate = (to, dur, then) => { const from = v, t0 = performance.now(), tok = token;
+      const step = t => { if (tok !== token) return; const k = Math.min(1, (t - t0) / dur), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        set(from + (to - from) * e); if (k < 1) raf = requestAnimationFrame(step); else { raf = null; if (then) then(); } };
+      raf = requestAnimationFrame(step); };
+    const intro = () => { halt(); set(0); const tok = token; setTimeout(() => { if (tok === token) animate(100, 1500); }, 650); };
+    sl.addEventListener('input', () => { touch(st); halt(); stopSweep(); set(+sl.value); });
+    play.onclick = () => { touch(st);
+      if (sweeping){ halt(); stopSweep(); return; }
+      sweeping = true; lab.textContent = 'Stop'; halt();
+      const loop = () => { if (!sweeping) return; animate(v < 50 ? 100 : 0, 1600, () => { const tok = token; setTimeout(() => { if (tok === token) loop(); }, 600); }); };
+      loop(); };
+    let introduced = false;
+    return { row, value: () => v, attach: gEl => { grid = gEl; paint(); }, busy: () => sweeping || !!raf,
+      shown(g, seen){ student = g.student; if (sweeping) return;
+        if (reduceMotion || !seen){ halt(); set(seen || introduced ? 100 : 0); return; }
+        if (st.hold > Date.now() && introduced) { set(v); return; }
+        introduced = true; intro(); },
+      seen(on){ if (on && !introduced && !sweeping && !reduceMotion){ introduced = true; intro(); } } };
+  }
+  const warmed = new Set();
+  function imgSlide(stage, g, [key, prompt], ctl){
+    const grid = el('div', 'wipe');
+    for (let i = 0; i < 6; i++){
+      const t = el('div', 'tile'), a = el('img', 'a'), b = el('img', 'b');
+      a.src = `${A}img/${key}/student_${i}.jpg`; b.src = `${A}img/${key}/rediverse_${i}.jpg`;
+      a.alt = `4-step student (${g.student}), seed ${i + 1}: ${prompt}`; b.alt = `ReDiverse, seed ${i + 1}: ${prompt}`;
+      a.width = b.width = 1024; a.height = b.height = 1024; a.decoding = b.decoding = 'async';
+      t.append(a, b, el('span', 'bar'));
+      t.onclick = e => { const r = t.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 100, im = x < ctl.value() ? b : a; zoom(im.src, im.alt); };
+      grid.appendChild(t);
+    }
+    stage.replaceChildren(grid); ctl.attach(grid);
+  }
+  imgSlide.warm = (g, [key]) => { if (warmed.has(key)) return; warmed.add(key);
+    ['student', 'rediverse'].forEach(m => { for (let i = 0; i < 6; i++){ const im = new Image(); im.src = `${A}img/${key}/${m}_${i}.jpg`; } }); };
 
-  /* copy BibTeX */
-  const cb = document.querySelector('.copy-bib');
-  cb.onclick = async () => { try { await navigator.clipboard.writeText(document.getElementById('bibtex-code').textContent); cb.textContent = 'Copied'; } catch (e) { cb.textContent = 'Select and copy'; } setTimeout(() => cb.textContent = 'Copy', 2000); };
+  /* Method Comparison: one row per method, one seed per column */
+  function cmpSlide(stage, g, [key, prompt]){
+    const sc = el('div', 'hscroll'), box = el('div', 'cmp-rows');
+    box.style.setProperty('--n', g.n); if (g.size) box.style.setProperty('--ar', `${g.size.w} / ${g.size.h}`);
+    g.rows.forEach(([m, lab]) => {
+      const ours = m === 'rediverse' ? 'ours' : '';
+      box.appendChild(el('div', 'rl ' + ours, lab));
+      for (let i = 0; i < g.n; i++){
+        if (g.kind === 'img'){
+          const im = el('img', ours); im.src = `${A}cmp/img/${key}/${m}_${i}.jpg`; im.width = 512; im.height = 512; im.loading = 'lazy';
+          im.alt = `${lab}, seed ${i + 1}: ${prompt}`; im.onclick = () => zoom(im.src, im.alt); box.appendChild(im);
+        } else {
+          const src = SHARED.has(key) && m !== 'dfd' ? `${A}vid/${key}/${m}_${i}.mp4` : `${A}cmp/vid/${key}/${m}_${i}.mp4`;
+          const v = clip(src, g.size, `${lab}, seed ${i + 1}: ${prompt}`); if (ours) v.className = ours; box.appendChild(v);
+        }
+      }
+    });
+    sc.appendChild(box); stage.replaceChildren(sc);
+  }
+
+  gallery('w-videos', VIDS, vidSlide,
+    g => `ReDiverse on ${g.name} (4-step ${g.student} student) &nbsp;&middot;&nbsp; top: student, bottom: ReDiverse &nbsp;&middot;&nbsp; each column starts from the same noise`, 0);
+  gallery('w-images', IMGS, imgSlide,
+    g => `ReDiverse on ${g.name} (4-step ${g.student} student), 1024<sup>2</sup> &nbsp;&middot;&nbsp; 0 %: the student's six samples, 100 %: ReDiverse's six samples of the same noises`, 7000, wipeDial);
+  gallery('w-compare', CMP, cmpSlide,
+    g => g.kind === 'img' ? `${g.name}, text-to-image &nbsp;&middot;&nbsp; one row per method, the same six noises in every row`
+                          : `${g.name}, text-to-video &nbsp;&middot;&nbsp; one row per method, the same five noises in every row`, 0);
 })();
 </script>
 </body>
