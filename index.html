@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}img{max-width:100%}</style>
 <title>ReDiverse</title>
 <meta name="description" content="ReDiverse restores sample diversity in few-step distilled image and video generators by probing their activations.">
 <meta name="keywords" content="diffusion distillation, sample diversity, few-step generation, activation probing, LoRA, SDXL, SD3, Wan 2.1, MiniMax-H3">
@@ -25,152 +24,136 @@
 <meta name="citation_author" content="Bhattad, Anand">
 <meta name="citation_author" content="Rehg, James Matthew">
 <meta name="citation_publication_date" content="2026">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
 <link rel="stylesheet" href="static/css/bulma.min.css">
 <link rel="stylesheet" href="static/css/index.css">
 <style>
-/* Additions to the Academic Project Page Template (static/css/index.css): sample grids, seed-matched clip rows,
-   prompt tabs, figures, tables and a full-resolution viewer. Colors come from the template's variables. */
-:root { --ours: var(--primary-color); --ours-wash: #eff6ff; color-scheme: light }
-body { background: var(--background-primary); color: var(--text-primary) }
-.icon svg { width: 1em; height: 1em; fill: currentColor }
-.button.is-soon { opacity: .55; pointer-events: none; margin: 8px 4px }
-.publication-authors .affiliations { margin: 0 .45rem }
-.scroll-to-top svg { width: 18px; height: 18px; fill: currentColor }
-.title.is-3, .title.is-4 { text-wrap: balance }
-.title.is-4 { font-family: 'Inter', sans-serif !important; font-weight: 700 !important; margin-top: 2.5rem }
-.publication-authors .author-block { color: var(--text-primary) }
-.affiliations { color: var(--text-secondary); font-weight: 500 }
-.venue { font-weight: 700; color: var(--text-primary) }
+  /* Page layout follows the BudgetPix project page (same template, same index.css): ruled section titles, alternating
+     white / light bands, a framed teaser, and tabbed slideshows with arrows, dots and a counter. */
+  :root { color-scheme: light; }
+  body { background: #fff; color: #4a4a4a; }
+  [hidden] { display: none !important; }
+  img { max-width: 100%; }
+  .icon svg { width: 1em; height: 1em; fill: currentColor; }
+  .publication-authors .name { color: hsl(204, 86%, 53%); }
+  .button.is-soon { opacity: .5; pointer-events: none; }
+  #lost .hr-lines:before, #lost .hr-lines:after { width: 14%; }
+  #diagnosis .hr-lines:before, #diagnosis .hr-lines:after { width: 18%; }
+  #videos .hr-lines:before, #videos .hr-lines:after, #images .hr-lines:before, #images .hr-lines:after { width: 28%; }
 
-/* teaser: overview video */
-.teaser video { width: 100%; height: auto; display: block; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-xl);
-  background: var(--background-accent); aspect-ratio: 16 / 9 }
-.teaser .subtitle { font-size: 1rem !important; color: var(--text-secondary); margin-top: 1rem }
+  /* slideshows */
+  .demo-box { max-width: 900px; margin: 0 auto; }
+  .slideshow { position: relative; }
+  .ss-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; line-height: 34px; border-radius: 50%;
+    background: rgba(0,0,0,.42); color: #fff; font-size: 15px; text-align: center; cursor: pointer; user-select: none; z-index: 2; }
+  .ss-arrow:hover { background: rgba(0,0,0,.78); color: #fff; }
+  .ss-arrow.prev { left: -46px; } .ss-arrow.next { right: -46px; }
+  .ss-dots { margin-top: .55rem; line-height: 1; }
+  .ss-dot { display: inline-block; width: 7px; height: 7px; margin: 0 2px; border-radius: 50%; background: #cfcfcf; cursor: pointer; vertical-align: middle; }
+  .ss-dot.on { background: #363636; }
+  .ss-count { font-size: .72rem; color: #777; margin-left: 8px; vertical-align: middle; }
+  .demo-note { font-size: .78rem; color: #555; margin-top: .6rem; }
+  .cap-line { font-size: .85rem; color: #555; margin-top: .45rem; font-style: italic; }
+  .hero.is-light .tabs.is-toggle a { color: #4a4a4a; background: #fff; border-color: #dbdbdb; }
+  .tabs.is-toggle li.is-active a, .hero.is-light .tabs.is-toggle li.is-active a { color: #fff; background: #3273dc; border-color: #3273dc; }
+  .columns > .column, .demo-box, .slideshow { min-width: 0; }
+  .tabs { margin-bottom: .9rem !important; }
 
-/* side-by-side samples */
-.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
-.pair figure { margin: 0; min-width: 0; position: relative }
-.pair figcaption { font-size: .95rem; font-weight: 600; text-align: center; margin-bottom: 4px; color: var(--text-secondary) }
-.pair figure.ours figcaption { color: var(--ours); font-weight: 700 }
-.pair img, .pair video { width: 100%; height: auto; display: block; border-radius: 6px; background: var(--background-accent) }
-.grid9 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px }
-.grid9 img { aspect-ratio: 1; object-fit: cover; border-radius: 3px; cursor: zoom-in }
-.cell { position: relative }
-.tag { position: absolute; top: 5px; right: 5px; font: 600 10.5px/1 'Inter', sans-serif; padding: 3px 6px; border-radius: 999px;
-  background: rgba(15, 23, 42, .66); color: #fff; pointer-events: none }
-.rows { display: grid; gap: 8px }
-.rows .pair video { aspect-ratio: var(--ar, 1.75) }
-.tldr { font-size: 1.1rem; text-align: center; margin: 0; color: var(--text-primary) }
-.tldr .hl { color: var(--ours); font-weight: 700 }
-.note { text-align: center; color: var(--text-light); font-size: .9rem; margin-top: .75rem }
+  /* image slides: student grid and ReDiverse grid, the same noise at the same position */
+  .img-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .img-pair figure { margin: 0; min-width: 0; }
+  .hd { font-size: .8rem; font-weight: 600; color: #555; margin-bottom: .3rem; text-align: left; }
+  .hd.ours { color: #000; }
+  .g6 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
+  .g6 img { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 4px; background: #ececec; display: block; cursor: zoom-in; }
+  .img-pair figure.ours .g6 { outline: 2px solid #363636; outline-offset: 3px; border-radius: 4px; }
 
-/* prompt tabs */
-.prompt-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem 1rem; margin-bottom: 1.25rem }
-.tabgroup { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .4rem }
-.tablabel { font-size: .85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .06em; margin-right: .2rem }
-.tab { font: 500 .9rem 'Inter', sans-serif; padding: .3rem .85rem; border-radius: 999px; border: 1px solid var(--border-color);
-  background: var(--background-primary); color: var(--text-primary); cursor: pointer; transition: var(--transition) }
-.tab:hover { border-color: var(--primary-color) }
-.tab[aria-selected="true"] { background: var(--primary-color); border-color: var(--primary-color); color: #fff }
-.stage { max-width: 860px; margin: 0 auto }
-.prompt { text-align: center; font-style: italic; color: var(--text-secondary); margin-top: .75rem }
+  /* video slides: the student row above the ReDiverse row, one seed per column */
+  .vid-scroll { overflow-x: auto; }
+  .vid-rows { display: grid; grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); gap: 4px; }
+  .vid-rows .hd { grid-column: 1 / -1; margin: .25rem 0 .1rem; }
+  .vid-rows video { width: 100%; height: auto; aspect-ratio: var(--ar, 1.75); border-radius: 4px; background: #ececec; display: block; }
 
-/* figures and tables */
-.fig { margin: 1.5rem auto 0; text-align: center }
-.fig img { max-width: 100%; height: auto; border-radius: var(--border-radius); box-shadow: var(--shadow-md); background: #fff }
-.fig figcaption { font-size: .95rem; color: var(--text-secondary); margin-top: .75rem; text-align: left }
-.fig figcaption b { color: var(--text-primary) }
-.twofig { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start }
-.twofig > *, .side > * { min-width: 0 }
-.side { display: grid; grid-template-columns: 1.1fr .9fr; gap: 2rem; align-items: center }
-.table-container { margin: 1.5rem auto 0; display: flex; justify-content: center }
-.table { font-variant-numeric: tabular-nums; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color) }
-.table th, .table td { text-align: center !important; white-space: nowrap; padding: .55em 1.1em }
-.table th:first-child, .table td:first-child { text-align: left !important }
-.table thead th { background: var(--background-accent); color: var(--text-primary); font-weight: 600 }
-.table tr.ours td { background: var(--ours-wash); color: var(--ours); font-weight: 700 }
-.table tr.ref td { color: var(--text-secondary); font-style: italic }
+  /* figures, tables, results boxes (as on BudgetPix) */
+  .method-fig { width: 100%; max-width: 820px; height: auto; margin: 0 auto; display: block; }
+  .fig-cap { font-size: .92rem; color: #363636; text-align: justify; margin: .4rem auto 1.6rem; max-width: 820px; }
+  .res-panel { padding: 1rem 1.2rem .9rem; margin: 0 auto 1.1rem; max-width: 900px; text-align: left; }
+  .res-panel .res-title { font-family: 'Google Sans', sans-serif; font-weight: 600; font-size: 1rem; margin-bottom: .5rem;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+  .res-panel .res-enl { font-family: 'Noto Sans', sans-serif; font-weight: 400; font-size: .78rem; color: #555; white-space: nowrap; }
+  .res-panel .res-enl:hover { color: #000; }
+  .res-panel .res-img { display: flex; justify-content: center; cursor: zoom-in; }
+  .res-panel .res-img img { width: 100%; height: auto; }
+  .res-panel .res-cap { font-size: .85rem; color: #555; margin-top: .6rem; }
+  .side { display: grid; grid-template-columns: 1.15fr .85fr; gap: 1.6rem; align-items: center; text-align: left; }
+  .side > * { min-width: 0; }
+  .table-wrap { overflow-x: auto; }
+  .table { font-variant-numeric: tabular-nums; font-size: .92rem; margin: 0 auto !important; }
+  .table th, .table td { text-align: center !important; white-space: nowrap; padding: .45em 1em; }
+  .table th:first-child, .table td:first-child { text-align: left !important; }
+  .table tr.ours td { font-weight: 700; color: #000; background: #f3f6fb; }
+  .table tr.ref td { color: #7a7a7a; font-style: italic; }
+  #BibTeX pre { white-space: pre; overflow-x: auto; }
+  .copy-bib { float: right; font-size: .78rem; color: #555; cursor: pointer; background: none; border: 0; padding: .3rem 0; }
+  .copy-bib:hover { color: #000; }
+  .modal-content { width: auto; max-width: 92vw; }
+  .modal-content img { max-height: 86vh; width: auto; margin: 0 auto; display: block; background: #fff; border-radius: 6px; }
+  .modal-content p { color: #eee; text-align: center; font-size: .85rem; margin-top: .5rem; }
 
-.lightbox { position: fixed; inset: 0; z-index: 1001; background: rgba(15, 23, 42, .9); display: flex; align-items: center; justify-content: center;
-  padding: 16px; cursor: zoom-out }
-.lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px }
-.lightbox p { position: absolute; bottom: 12px; left: 0; right: 0; text-align: center; color: #e2e8f0; font-size: 14px; margin: 0; padding: 0 16px }
-
-/* video results: one row per model, one column per seed (the same noise down each column) */
-.wide-stage { max-width: 1400px; margin: 0 auto }
-.hscroll { overflow-x: auto; padding-bottom: 4px }
-.hgrid { display: grid; grid-template-columns: repeat(var(--n, 5), minmax(170px, 1fr)); gap: 8px }
-.hgrid .hlabel { grid-column: 1 / -1; font-size: .95rem; font-weight: 700; color: var(--text-secondary); margin-top: .3rem }
-.hgrid .hlabel.ours { color: var(--ours) }
-.hgrid figure { margin: 0; position: relative; min-width: 0 }
-.hgrid video { width: 100%; height: auto; display: block; border-radius: 6px; background: var(--background-accent); aspect-ratio: var(--ar, 1.75) }
-@media screen and (max-width: 768px) { #videos .container.is-fluid { padding-left: 0; padding-right: 0 } }
-
-@media screen and (max-width: 900px) {
-  .twofig, .side { grid-template-columns: 1fr }
-}
-@media screen and (max-width: 480px) {
-  .hero-body { padding-left: 16px; padding-right: 16px }
-  .publication-title { font-size: 1.7rem !important }
-  .scroll-to-top { right: 1rem; bottom: 1rem }
-}
+  @media (max-width: 1040px) { .ss-arrow.prev { left: 6px; } .ss-arrow.next { right: 6px; } }
+  @media (max-width: 768px) {
+    .hero-body { padding-left: 16px; padding-right: 16px; }
+    .side { grid-template-columns: 1fr; }
+    .vid-rows { grid-template-columns: repeat(var(--n, 5), minmax(132px, 1fr)); }
+    .hr-lines:before, .hr-lines:after { display: none; }
+  }
+  @media (max-width: 560px) { .img-pair { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<button class="scroll-to-top" type="button" title="Scroll to top" aria-label="Scroll to top">
-  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.6 4.3 15.3l1.7 1.7 6-6 6 6 1.7-1.7z"/></svg>
-</button>
-
-<main id="main-content">
 <section class="hero">
   <div class="hero-body">
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Restoring Diversity in Distilled Image and Video Generators by Probing Activations</h1>
+          <h1 class="xtitle is-1 publication-title" style="font-size: 200%; font-weight: 800;">Restoring Diversity in Distilled Image and Video Generators by Probing Activations</h1>
           <div class="is-size-5 publication-authors">
-            <span class="author-block">Furkan Horoz<sup>1</sup>,</span>
-            <span class="author-block">Ozgur Kara<sup>1</sup>,</span>
-            <span class="author-block">Kaan Oktay<sup>2</sup>,</span>
-            <span class="author-block">Adil Kaan Akan<sup>2</sup>,</span>
-            <span class="author-block">Atakan Kara<sup>2</sup>,</span>
-            <span class="author-block">Anand Bhattad<sup>3,†</sup>,</span>
-            <span class="author-block">James Matthew Rehg<sup>1,†</sup></span>
+            <span class="author-block"><span class="name">Furkan Horoz</span><sup>1</sup></span>
+            <span class="author-block"><a href="https://karaozgur.com/" target="_blank" rel="noopener">Ozgur Kara</a><sup>1</sup></span>
+            <span class="author-block"><span class="name">Kaan Oktay</span><sup>2</sup></span>
+            <span class="author-block"><span class="name">Adil Kaan Akan</span><sup>2</sup></span>
+            <span class="author-block"><span class="name">Atakan Kara</span><sup>2</sup></span>
+            <span class="author-block"><span class="name">Anand Bhattad</span><sup>3,†</sup></span>
+            <span class="author-block"><a href="https://scholar.google.com/citations?user=8kA3eDwAAAAJ&amp;hl=en" target="_blank" rel="noopener">James Matthew Rehg</a><sup>1,†</sup></span>
           </div>
           <div class="is-size-5 publication-authors">
-            <span class="author-block affiliations"><sup>1</sup>University of Illinois at Urbana-Champaign</span>
-            <span class="author-block affiliations"><sup>2</sup>fal</span>
-            <span class="author-block affiliations"><sup>3</sup>Johns Hopkins University</span>
-            <br><span class="author-block venue">Preprint, 2026</span>
-            <span class="eql-cntrb"><small><br><sup>†</sup>Equal advising</small></span>
+            <span class="author-block"><sup>1</sup>University of Illinois Urbana-Champaign</span>
+            <span class="author-block"><sup>2</sup>fal</span>
+            <span class="author-block"><sup>3</sup>Johns Hopkins University</span><br><b>Preprint, 2026</b>
+            <span class="eql-cntrb"><small><br><sup>†</sup>Equal advising.</small></span>
           </div>
+
           <div class="column has-text-centered">
             <div class="publication-links">
               <span class="link-block">
                 <span class="external-link button is-normal is-rounded is-dark is-soon" title="The paper link is added at release">
-                  <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8 12h10v1.6H8V12zm0 3.4h10V17H8v-1.6z"/></svg></span>
-                  <span>Paper (soon)</span>
+                  <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8 12h10v1.6H8V12zm0 3.4h10V17H8v-1.6z"/></svg></span><span>Paper (soon)</span>
                 </span>
               </span>
               <span class="link-block">
-                <a href="https://github.com/H-furkan/rediverse" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.7 5.38-5.27 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg></span>
-                  <span>Code</span>
+                <a class="external-link button is-normal is-rounded is-dark" href="https://github.com/H-furkan/rediverse" target="_blank" rel="noopener">
+                  <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.7 5.38-5.27 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg></span><span>Code</span>
                 </a>
               </span>
               <span class="link-block">
-                <a href="https://huggingface.co/Fo-zh/ReDiverse" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon" aria-hidden="true">🤗</span>
-                  <span>Models</span>
+                <a class="external-link button is-normal is-rounded is-dark" href="https://huggingface.co/Fo-zh/ReDiverse" target="_blank" rel="noopener">
+                  <span class="icon">&#129303;</span><span>Models</span>
                 </a>
               </span>
               <span class="link-block">
                 <a href="#BibTeX" class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h5v5H8c0 2 1 3 3 3v2c-3.5 0-5-2-5-5V7zm8 0h5v5h-3c0 2 1 3 3 3v2c-3.5 0-5-2-5-5V7z"/></svg></span>
-                  <span>BibTeX</span>
+                  <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h5v5H8c0 2 1 3 3 3v2c-3.5 0-5-2-5-5V7zm8 0h5v5h-3c0 2 1 3 3 3v2c-3.5 0-5-2-5-5V7z"/></svg></span><span>BibTeX</span>
                 </a>
               </span>
             </div>
@@ -181,49 +164,38 @@ body { background: var(--background-primary); color: var(--text-primary) }
   </div>
 </section>
 
-<!-- Teaser video: a short overview of the paper -->
+<!-- Teaser: the overview video -->
 <section class="hero teaser">
   <div class="container is-max-desktop">
-    <div class="hero-body">
-      <video id="overview" poster="assets/demo/rediverse_overview.jpg" autoplay controls muted loop playsinline preload="metadata"
-        width="1920" height="1080" aria-label="Overview video of ReDiverse">
+    <div class="hero-body" style="padding-top: 1.5rem;">
+      <video id="teaser" poster="assets/demo/rediverse_overview.jpg" autoplay muted loop playsinline controls preload="metadata" width="1920" height="1080"
+        aria-label="Overview video of ReDiverse" style="width: 100%; max-width: 800px; height: auto; display: block; margin: 0 auto; border-radius: 10px; border: 1px solid #dbdbdb;">
         <source src="assets/demo/rediverse_overview.mp4" type="video/mp4">
       </video>
-      <h2 class="subtitle has-text-centered">
-        A short overview (silent): the problem, where diversity collapses inside the student, the two ReDiverse interventions,
-        and seed-matched results.
-      </h2>
+      <h2 class="subtitle has-text-centered is-6" style="margin-top: 0.8rem; max-width: 820px; margin-left: auto; margin-right: auto;"><b>Diversity back in
+        few-step generators.</b> Few-step students keep (or even exceed) their teachers' activation variance but squeeze it into fewer directions,
+        starting at one intermediate block of the first denoising step. ReDiverse puts the missing directions back with a short fine-tune
+        (ReDiverse-FT), with no training at all (ReDiverse-TF), or with both. The overview is silent.</h2>
     </div>
   </div>
 </section>
 
-<!-- TL;DR -->
-<section class="hero is-small is-light" id="tldr">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <p class="tldr"><b>TL;DR:</b> Few-step students keep (or even exceed) their teachers' activation variance but squeeze it into fewer
-        directions, starting at one intermediate block of the first denoising step. <span class="hl">ReDiverse</span> puts the missing directions
-        back with a short fine-tune (ReDiverse-FT), with no training at all (ReDiverse-TF), or with both.</p>
-    </div>
-  </div>
-</section>
-
-<!-- Paper abstract -->
-<section class="section hero" id="abstract">
+<!-- Abstract -->
+<section class="section hero is-light">
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
+        <h2 class="title is-3 hr-lines">Abstract</h2>
         <div class="content has-text-justified">
           <p>Distilling diffusion models into few-step student models substantially reduces sampling latency, but induces severe diversity
             collapse: samples generated from different random seeds show minimal variation. In this work, we investigate the root cause of this
-            failure by probing the internal representations of student models relative to their teachers. We find that <b>distilled students
-            maintain total activation variance comparable to their teachers, but concentrate it into substantially fewer directions</b>. This
+            failure by probing the internal representations of student models relative to their teachers. We find that distilled students
+            maintain total activation variance comparable to their teachers, but concentrate it into substantially fewer directions. This
             directional collapse is localized to an identifiable intermediate block at the initial denoising step. Consequently, diversity
             collapse stems from a misallocation of activation variance rather than an inherent loss of generative capacity. Guided by this
-            finding, we propose <b>ReDiverse</b> to reinstate the missing variance directions. At training time, <b>ReDiverse-FT</b> fine-tunes a
+            finding, we propose ReDiverse to reinstate the missing variance directions. At training time, ReDiverse-FT fine-tunes a
             lightweight adapter that regresses student activations onto the teacher's, reviving the teacher's feature variance characteristic.
-            At inference time, <b>ReDiverse-TF</b> introduces a training-free mechanism that steers activations along precomputed teacher
+            At inference time, ReDiverse-TF introduces a training-free mechanism that steers activations along precomputed teacher
             principal directions. Across image and video distillation benchmarks, ReDiverse consistently restores sample diversity while
             preserving generation quality, further supported by the user study.</p>
         </div>
@@ -233,78 +205,100 @@ body { background: var(--background-primary); color: var(--text-primary) }
 </section>
 
 <!-- Video results -->
-<section class="hero is-small is-light" id="videos">
+<section class="hero is-small" id="videos">
   <div class="hero-body">
-    <div class="container is-fluid">
-      <h2 class="title is-3 has-text-centered">Video Results</h2>
-      <p class="note" style="margin:-1rem 0 1.25rem">Seed-matched clips: each column starts from the same initial noise in both rows.</p>
-      <div class="prompt-tabs" id="vidTabs" role="tablist" aria-label="Video prompt"></div>
-      <div class="wide-stage">
-        <div class="hscroll"><div class="hgrid" id="vidRows"></div></div>
-        <p class="prompt" id="vidPrompt"></p>
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="title is-3 hr-lines">Video Results</h2>
+          <div class="content"><p>Each 4-step student repeats one composition for a prompt. ReDiverse, started from the same noises, changes the
+            subject, the setting and the camera. Every column starts from the same initial noise in both rows.</p></div>
+          <div class="demo-box" id="w-videos"></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Image results -->
-<section class="hero is-small" id="images">
+<section class="hero is-small is-light" id="images">
   <div class="hero-body">
     <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered">Image Results</h2>
-      <p class="note" style="margin:-1rem 0 1.25rem">Six seed-matched samples per prompt: the same position starts from the same initial noise
-        in both grids.</p>
-      <div class="prompt-tabs" id="imgTabs" role="tablist" aria-label="Image prompt"></div>
-      <div class="stage">
-        <div class="pair" id="imgPair"></div>
-        <p class="prompt" id="imgPrompt"></p>
-        <p class="note">Click any image to view it at full resolution.</p>
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="title is-3 hr-lines">Image Results</h2>
+          <div class="content"><p>Six samples per prompt from the 4-step student and from ReDiverse. The same position in both grids starts from the
+            same initial noise. Click any image to view it at full resolution.</p></div>
+          <div class="demo-box" id="w-images"></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Diagnosis -->
-<section class="hero is-small is-light" id="diagnosis">
+<section class="hero is-small" id="diagnosis">
   <div class="hero-body">
     <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered">Same Variance, Fewer Directions</h2>
-      <div class="content has-text-justified">
-        <p>We give the same noises to a teacher and its 4-step student, run their first denoising step, and look at the activations of every
-          block across noises. Three quantities describe that cloud: its <b>total variance</b>, its <b>participation ratio</b> (how many
-          directions the variance effectively spans), and the <b>concentration</b> (variance per direction). Early blocks match. At an
-          intermediate block, the <b>collapsed block ℓ</b>, the student keeps or even amplifies the total variance, but spans far fewer
-          directions, and the collapse propagates to the output.</p>
-      </div>
-      <figure class="fig">
-        <img src="assets/fig/probe_depth.png" alt="Participation ratio, total variance and concentration of teacher and student at every block of SDXL and Wan 2.1" loading="lazy" width="2000" height="590">
-        <figcaption><b>Variance characteristic along the depth.</b> Participation ratio, total variance and concentration of teacher and
-          student activations at every layer, for (a) an image model (SDXL) and (b) a video model (Wan 2.1). Total variance and
-          concentration are min–max normalized to [0, 1] over teacher and student (SDXL's in log space). The vertical line marks the
-          collapsed block.</figcaption>
-      </figure>
-      <div class="table-container">
-        <table class="table is-narrow">
-          <thead><tr><th>Student / teacher at ℓ</th><th>PR</th><th>Total variance</th><th>Concentration</th></tr></thead>
-          <tbody>
-            <tr><td>DMD2 (SDXL)</td><td>0.40</td><td>1.63</td><td>4.76</td></tr>
-            <tr><td>TDM (SD3)</td><td>0.49</td><td>1.03</td><td>2.68</td></tr>
-            <tr><td>lightx2v (Wan 2.1)</td><td>0.60</td><td>1.41</td><td>2.54</td></tr>
-            <tr><td>Turbo (MiniMax-H3)</td><td>0.37</td><td>2.92</td><td>8.08</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3 class="title is-4 has-text-centered">The lost directions are still decodable</h3>
-      <div class="side">
-        <div class="content has-text-justified">
-          <p>We move the first-step activation at the collapsed block along a top principal direction, with growing strength. Moving the
-            teacher along its own direction changes framing, pose and scene. Injecting that same <b>teacher direction into the student</b>
-            produces the same structural changes, with no change to the student's weights. Moving the student along its own direction only
-            changes appearance, such as coat pattern and lighting. The directions lost in distillation are the ones that set structure, and
-            the student's later blocks can still render them. Diversity collapse is a misallocation of variance, not a loss of capacity.</p>
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="title is-3 hr-lines">Same Variance, Fewer Directions</h2>
+          <div class="content has-text-justified">
+            <p>We give the same noises to a teacher and its 4-step student, run their first denoising step, and look at the activations of every
+              block across noises. Three quantities describe that cloud: its <b>total variance</b>, its <b>participation ratio</b> (how many
+              directions the variance effectively spans), and the <b>concentration</b> (variance per direction). Early blocks match. At an
+              intermediate block, the <b>collapsed block ℓ</b>, the student keeps or even amplifies the total variance, but spans far fewer
+              directions, and the collapse propagates to the output.</p>
+          </div>
+          <div class="box res-panel">
+            <p class="res-title"><span>Variance characteristic along the depth, SDXL and Wan 2.1</span><a class="res-enl" href="assets/fig/probe_depth.png" target="_blank">&#x26F6;&nbsp; enlarge</a></p>
+            <div class="res-img"><img src="assets/fig/probe_depth.png" alt="Participation ratio, total variance and concentration of teacher and student at every block of SDXL and Wan 2.1" loading="lazy" width="2000" height="590"></div>
+            <p class="res-cap">Participation ratio, total variance and concentration of teacher and student activations at every layer, for (a) an
+              image model (SDXL) and (b) a video model (Wan 2.1). Total variance and concentration are min–max normalized to [0, 1] over teacher
+              and student (SDXL's in log space). The vertical line marks the collapsed block.</p>
+          </div>
+          <div class="box res-panel">
+            <p class="res-title"><span>Student / teacher ratios at the collapsed block ℓ</span></p>
+            <div class="table-wrap">
+              <table class="table is-narrow">
+                <thead><tr><th>Student</th><th>Participation ratio</th><th>Total variance</th><th>Concentration</th></tr></thead>
+                <tbody>
+                  <tr><td>DMD2 (SDXL)</td><td>0.40</td><td>1.63</td><td>4.76</td></tr>
+                  <tr><td>TDM (SD3)</td><td>0.49</td><td>1.03</td><td>2.68</td></tr>
+                  <tr><td>lightx2v (Wan 2.1)</td><td>0.60</td><td>1.41</td><td>2.54</td></tr>
+                  <tr><td>Turbo (MiniMax-H3)</td><td>0.37</td><td>2.92</td><td>8.08</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="res-cap">Every student spans fewer directions than its teacher (ratio below 1) while keeping or raising the total variance.</p>
+          </div>
         </div>
-        <figure class="fig" style="margin-top:0"><img src="assets/fig/steering.jpg" alt="Steering SDXL along teacher and student directions" loading="lazy" width="900" height="1002" style="max-width:420px;width:100%"></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Steering -->
+<section class="hero is-small is-light" id="lost">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="title is-3 hr-lines">The Lost Directions Are Still Decodable</h2>
+          <div class="side">
+            <div class="content has-text-justified">
+              <p>We move the first-step activation at the collapsed block along a top principal direction, with growing strength. Moving the
+                teacher along its own direction changes framing, pose and scene. Injecting that same <b>teacher direction into the student</b>
+                produces the same structural changes, with no change to the student's weights. Moving the student along its own direction only
+                changes appearance, such as coat pattern and lighting.</p>
+              <p>The directions lost in distillation are the ones that set structure, and the student's later blocks can still render them.
+                Diversity collapse is a misallocation of variance, not a loss of capacity.</p>
+            </div>
+            <div class="box res-panel" style="margin: 0;">
+              <div class="res-img"><img src="assets/fig/steering.jpg" alt="Steering SDXL along teacher and student directions" loading="lazy" width="900" height="1002"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -314,20 +308,20 @@ body { background: var(--background-primary); color: var(--text-primary) }
 <section class="hero is-small" id="method">
   <div class="hero-body">
     <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered">Method</h2>
-      <div class="content has-text-justified">
-        <p>ReDiverse restores the missing directions at the collapsed block ℓ, in the student's first step only. The two parts can be used
-          alone or together.</p>
-      </div>
-      <div class="twofig">
-        <figure class="fig"><img src="assets/fig/method_training.jpg" alt="ReDiverse-FT training diagram" loading="lazy" width="1200" height="615">
-          <figcaption><b>ReDiverse-FT.</b> Teacher and student start from the same noise and prompt. A LoRA on the blocks up to ℓ regresses
-            the student's step-1 activation onto the teacher's activation at step τ. Each prompt comes with 16 noises, so matching noise by
-            noise transfers the teacher's variation; the LoRA is active only at the first step.</figcaption></figure>
-        <figure class="fig"><img src="assets/fig/method_tf.jpg" alt="ReDiverse-TF inference diagram" loading="lazy" width="1200" height="615">
-          <figcaption><b>ReDiverse-TF.</b> Training-free. For each prompt, PCA over the teacher's step-τ activations from N = 25 noises gives
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="title is-3 hr-lines">Method</h2>
+          <div class="content"><p>ReDiverse restores the missing directions at the collapsed block ℓ, in the student's first step only. The two
+            parts can be used alone or together.</p></div>
+          <img class="method-fig" src="assets/fig/method_training.jpg" alt="ReDiverse-FT training diagram" loading="lazy" width="1200" height="615">
+          <p class="fig-cap"><b>ReDiverse-FT.</b> Teacher and student start from the same noise and prompt. A LoRA on the blocks up to ℓ regresses
+            the student's step-1 activation onto the teacher's activation at step τ. Each prompt comes with 16 noises, so matching noise by noise
+            transfers the teacher's variation; the LoRA is active only at the first step.</p>
+          <img class="method-fig" src="assets/fig/method_tf.jpg" alt="ReDiverse-TF inference diagram" loading="lazy" width="1200" height="615">
+          <p class="fig-cap"><b>ReDiverse-TF.</b> Training-free. For each prompt, PCA over the teacher's step-τ activations from N = 25 noises gives
             directions u<sub>k</sub> and spreads s<sub>k</sub>. Each sample adds Σ<sub>k</sub> α<sub>k</sub> s<sub>k</sub> u<sub>k</sub>,
-            α<sub>k</sub> ~ U[−2, 2], to the student's activation at ℓ in step 1.</figcaption></figure>
+            α<sub>k</sub> ~ U[−2, 2], to the student's activation at ℓ in step 1.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -337,41 +331,39 @@ body { background: var(--background-primary); color: var(--text-primary) }
 <section class="hero is-small is-light" id="results">
   <div class="hero-body">
     <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered">Quantitative Results</h2>
-      <div class="content has-text-justified">
-        <p>Sample diversity measured with DINO (mean pairwise distance between samples of a prompt, ×100; higher is more diverse) on GenEval
-          (553 prompts × 100 seeds) and VBench (300 prompts × 10 clips). All rows except the teacher sample in four steps. ReDiverse closes
-          most of the gap to the multi-step teacher. Prompt alignment stays close to the student (CLIPScore within 0.5 points on images),
-          while reward-model scores drop on images; the paper reports the full set of diversity and quality metrics and a user study.</p>
-      </div>
-      <div class="table-container">
-        <table class="table is-narrow">
-          <thead><tr><th>DINO diversity ↑</th><th>SDXL</th><th>SD3</th><th>Wan 2.1</th><th>MiniMax-H3</th></tr></thead>
-          <tbody>
-            <tr><td>Student (4 steps)</td><td>59.4</td><td>48.4</td><td>31.6</td><td>36.5</td></tr>
-            <tr><td>ReDiverse-TF</td><td>60.1</td><td>53.8</td><td>34.6</td><td>42.2</td></tr>
-            <tr><td>ReDiverse-FT</td><td>64.6</td><td>53.5</td><td>46.8</td><td>44.1</td></tr>
-            <tr class="ours"><td>ReDiverse</td><td>65.0</td><td>60.1</td><td>52.2</td><td>50.9</td></tr>
-            <tr class="ref"><td>Teacher (multi-step)</td><td>66.3</td><td>61.6</td><td>51.6</td><td>52.5</td></tr>
-          </tbody>
-        </table>
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="title is-3 hr-lines">Results</h2>
+          <div class="box res-panel">
+            <p class="res-title"><span>Sample diversity, DINO (×100, higher is more diverse)</span></p>
+            <div class="table-wrap">
+              <table class="table is-narrow">
+                <thead><tr><th>Method</th><th>SDXL</th><th>SD3</th><th>Wan 2.1</th><th>MiniMax-H3</th></tr></thead>
+                <tbody>
+                  <tr><td>Student (4 steps)</td><td>59.4</td><td>48.4</td><td>31.6</td><td>36.5</td></tr>
+                  <tr><td>ReDiverse-TF</td><td>60.1</td><td>53.8</td><td>34.6</td><td>42.2</td></tr>
+                  <tr><td>ReDiverse-FT</td><td>64.6</td><td>53.5</td><td>46.8</td><td>44.1</td></tr>
+                  <tr class="ours"><td>ReDiverse</td><td>65.0</td><td>60.1</td><td>52.2</td><td>50.9</td></tr>
+                  <tr class="ref"><td>Teacher (multi-step)</td><td>66.3</td><td>61.6</td><td>51.6</td><td>52.5</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="res-cap">Mean pairwise DINO distance between samples of a prompt on GenEval (553 prompts × 100 seeds) and VBench (300 prompts ×
+              10 clips). All rows except the teacher sample in four steps. ReDiverse closes most of the gap to the multi-step teacher. Prompt
+              alignment stays close to the student (CLIPScore within 0.5 points on images), while reward-model scores drop on images; the paper
+              reports the full set of diversity and quality metrics and a user study.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
-</main>
 
-<!--BibTex citation -->
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
-    <div class="bibtex-header">
-      <h2 class="title">BibTeX</h2>
-      <button class="copy-bibtex-btn" type="button" title="Copy BibTeX to clipboard">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
-        <span class="copy-text">Copy</span>
-      </button>
-    </div>
-    <pre id="bibtex-code"><code>@article{horoz2026rediverse,
+    <button class="copy-bib" type="button">Copy</button>
+    <h2 class="title">BibTeX</h2>
+    <pre><code id="bibtex-code">@article{horoz2026rediverse,
   title   = {Restoring Diversity in Distilled Image and Video Generators by Probing Activations},
   author  = {Horoz, Furkan and Kara, Ozgur and Oktay, Kaan and Akan, Adil Kaan and Kara, Atakan
              and Bhattad, Anand and Rehg, James Matthew},
@@ -385,10 +377,10 @@ body { background: var(--background-primary); color: var(--text-primary) }
   <div class="container">
     <div class="columns is-centered">
       <div class="column is-8">
-        <div class="content has-text-centered">
+        <div class="content">
           <p>This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener">Academic
-            Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank" rel="noopener">Nerfies</a>
-            project page. This website is licensed under a <a rel="license noopener" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+            Project Page Template</a>. You are free to borrow the source of this website, we just ask that you link back to this page in the footer.
+            This website is licensed under a <a rel="license noopener" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
             Commons Attribution-ShareAlike 4.0 International License</a>.</p>
         </div>
       </div>
@@ -396,149 +388,150 @@ body { background: var(--background-primary); color: var(--text-primary) }
   </div>
 </footer>
 
+<div class="modal" id="lightbox">
+  <div class="modal-background"></div>
+  <div class="modal-content"><img id="lbImg" alt=""><p id="lbCap"></p></div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
+
 <script>
-(() => {
-const $ = s => document.querySelector(s);
-const A = 'assets/';
+(function(){
+  const A = 'assets/';
+  const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
+  const reduceMotion = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const IDLE_MS = 8000, touch = st => { st.hold = Date.now() + IDLE_MS; };
+  let active = null;                       // the slideshow the arrow keys drive: the one last hovered or touched
 
-/* template: scroll-to-top button */
-const top = $('.scroll-to-top');
-top.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
-addEventListener('scroll', () => top.classList.toggle('visible', scrollY > 300), { passive: true });
+  /* Examples. Every comparison is seed-matched: column / position i is the same initial noise for the student and ReDiverse.
+     Every ReDiverse sample is labelled "ReDiverse", whichever part of the method (FT, TF or both) produced it. */
+  const H3 = { w: 1344, h: 768 }, WAN = { w: 832, h: 480 };
+  const VIDS = [
+    { name: 'MiniMax-H3', student: 'Turbo', size: H3, items: [
+      ['h3_gwen', 'Gwen Stacy reading a book, animated style'], ['h3_balloon', 'a hot air balloon floating'],
+      ['h3_cablecar', 'a cable car moving'], ['h3_airplane', 'an airplane accelerating to gain speed'],
+      ['h3_violin', 'a musician playing the violin'], ['h3_penguin', 'a penguin walking on ice'],
+      ['h3_forest', 'a forest in autumn'], ['h3_candle', 'a candle flickering']] },
+    { name: 'Wan 2.1', student: 'lightx2v', size: WAN, items: [
+      ['wan_rabbit', 'a fat rabbit wearing a purple robe walking through a fantasy landscape'],
+      ['wan_astronaut', 'An astronaut flying in space, in super slow motion'], ['wan_paperplane', 'a paper plane flying'],
+      ['wan_dog', 'a dog running happily'], ['wan_fox', 'a fox running through the snow'], ['wan_dolphin', 'a dolphin jumping'],
+      ['wan_forest', 'a forest in autumn'], ['wan_carousel', 'a carousel spinning']] },
+  ];
+  const IMGS = [
+    { name: 'SDXL', student: 'DMD2', items: [
+      ['sdxl_dog', 'a photo of a dog'], ['sdxl_cat', 'a photo of a cat'], ['sdxl_candle', 'a candle'], ['sdxl_violin', 'a violin'],
+      ['sdxl_parrot', 'a parrot'], ['sdxl_church', 'a church'], ['sdxl_couch', 'a photo of a couch'], ['sdxl_horse', 'a photo of a horse'],
+      ['sdxl_umbrella', 'a photo of an umbrella'], ['sdxl_bowl', 'a photo of a bowl'], ['sdxl_tv', 'a photo of a tv'],
+      ['sdxl_train', 'a photo of a train']] },
+    { name: 'SD3', student: 'TDM', items: [
+      ['sd3_backpack', 'a photo of a backpack'], ['sd3_hat', 'a hat'], ['sd3_bed', 'a photo of a bed'], ['sd3_car', 'a photo of a car'],
+      ['sd3_bottle', 'a photo of a bottle'], ['sd3_vases', 'a photo of two vases'], ['sd3_bird', 'a photo of a bird'],
+      ['sd3_person', 'a photo of a person'], ['sd3_book', 'a photo of a book'], ['sd3_chair', 'a photo of a chair'],
+      ['sd3_mouse', 'a photo of an orange computer mouse'], ['sd3_boat', 'a photo of a yellow boat']] },
+  ];
 
-/* template: copy BibTeX, with a select-text fallback */
-$('.copy-bibtex-btn').onclick = async () => {
-  const b = $('.copy-bibtex-btn'), t = b.querySelector('.copy-text'), code = $('#bibtex-code');
-  try { await navigator.clipboard.writeText(code.textContent); b.classList.add('copied'); t.textContent = 'Cop'; }
-  catch { const r = document.createRange(); r.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(r); t.textContent = 'Selected'; }
-  setTimeout(() => { b.classList.remove('copied'); t.textContent = 'Copy'; }, 2000);
-};
+  /* full-resolution viewer */
+  const lb = document.getElementById('lightbox'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
+  const zoom = (src, cap) => { lbImg.src = src; lbImg.alt = cap || ''; lbCap.textContent = cap || ''; lb.classList.add('is-active'); };
+  lb.querySelectorAll('.modal-background, .modal-close').forEach(x => x.addEventListener('click', () => lb.classList.remove('is-active')));
+  document.querySelectorAll('.res-img img').forEach(im => im.addEventListener('click', () => zoom(im.src, im.alt)));
+  document.querySelectorAll('.res-enl').forEach(a => a.addEventListener('click', e => { e.preventDefault(); zoom(a.href, ''); }));
 
-/* clips load and play only while visible; all clips of a set restart together */
-const io = new IntersectionObserver(es => es.forEach(e => {
-  const vids = [...e.target.querySelectorAll('video')];
-  if (e.isIntersecting) vids.forEach(v => { if (!v.src) v.src = v.dataset.src; v.currentTime = 0; v.play().catch(() => {}); });
-  else vids.forEach(v => v.pause());
-}), { threshold: 0.15 });
-
-/* full-resolution viewer */
-const lb = document.createElement('div'); lb.className = 'lightbox'; lb.hidden = true;
-lb.innerHTML = '<img alt=""><p></p>'; document.body.appendChild(lb);
-lb.onclick = () => { lb.hidden = true; };
-addEventListener('keydown', e => { if (e.key === 'Escape') lb.hidden = true; });
-function zoom(img) { lb.querySelector('img').src = img.src; lb.querySelector('img').alt = img.alt; lb.querySelector('p').textContent = img.alt; lb.hidden = false; }
-
-/* Every ReDiverse sample is labelled "ReDiverse", whichever part of the method (FT, TF or both) produced it. */
-function oursLabel() { return 'ReDiverse'; }
-function mixed() { return false; }
-
-/* a pair of 3-column grids (n = 9 or 6): student and ReDiverse, same seed at the same position */
-function grids(host, key, prompt, n = 9, variants = Array(n).fill('FT+TF')) {
-  const ours = oursLabel(variants), mix = mixed(variants);
-  host.innerHTML = [['student', '4-step student'], ['rediverse', ours]].map(([m, lab]) =>
-    `<figure class="${m === 'rediverse' ? 'ours' : ''}"><figcaption>${lab}</figcaption><div class="grid9">${
-      [...Array(n).keys()].map(i => {
-        const tag = m === 'rediverse' && mix && variants[i] === 'FT' ? '<span class="tag">FT</span>' : '';
-        return `<div class="cell"><img src="${A}img/${key}/${m}_${i}.jpg" width="1024" height="1024" loading="lazy" alt="${lab}, seed ${i + 1}: ${prompt}">${tag}</div>`;
-      }).join('')
-    }</div></figure>`).join('');
-  host.querySelectorAll('img').forEach(im => { im.onclick = () => zoom(im); });
-}
-
-/* rows of seed-matched clips: student on the left, ReDiverse on the right */
-function clips(host, it) {
-  host.innerHTML = '';
-  host.style.setProperty('--ar', `${it.size.w} / ${it.size.h}`);
-  const ours = oursLabel(it.v), mix = mixed(it.v);
-  const head = document.createElement('div'); head.className = 'pair';
-  head.innerHTML = `<figure><figcaption>4-step student</figcaption></figure><figure class="ours"><figcaption>${ours}</figcaption></figure>`;
-  host.appendChild(head);
-  for (let i = 0; i < it.v.length; i++) {
-    const row = document.createElement('div'); row.className = 'pair';
-    ['student', 'rediverse'].forEach(m => {
-      const f = document.createElement('figure'); if (m === 'rediverse') f.className = 'ours';
-      const v = document.createElement('video');
-      v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'none';
-      v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
-      v.width = it.size.w; v.height = it.size.h;
-      v.dataset.src = `${A}vid/${it.key}/${m}_${i}.mp4`;
-      v.setAttribute('aria-label', `${m === 'student' ? '4-step student' : ours}, seed ${i + 1}: ${it.prompt}`);
-      f.appendChild(v);
-      if (m === 'rediverse' && mix && it.v[i] === 'FT') f.insertAdjacentHTML('beforeend', '<span class="tag">FT</span>');
-      row.appendChild(f);
-    });
-    host.appendChild(row);
-  }
-  io.unobserve(host); io.observe(host);
-}
-
-/* Video Results: the student's clips in one row, ReDiverse's in the row below; column i = noise i in both rows */
-function clipsH(host, it) {
-  host.innerHTML = '';
-  host.style.setProperty('--n', it.v.length);
-  host.style.setProperty('--ar', `${it.size.w} / ${it.size.h}`);
-  const ours = oursLabel(it.v), mix = mixed(it.v);
-  [['student', '4-step student'], ['rediverse', ours]].forEach(([m, lab]) => {
-    host.insertAdjacentHTML('beforeend', `<div class="hlabel${m === 'rediverse' ? ' ours' : ''}">${lab}</div>`);
-    for (let i = 0; i < it.v.length; i++) {
-      const f = document.createElement('figure');
-      const v = document.createElement('video');
-      v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'none';
-      v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
-      v.width = it.size.w; v.height = it.size.h;
-      v.dataset.src = `${A}vid/${it.key}/${m}_${i}.mp4`;
-      v.setAttribute('aria-label', `${lab}, seed ${i + 1}: ${it.prompt}`);
-      f.appendChild(v);
-      if (m === 'rediverse' && mix && it.v[i] === 'FT') f.insertAdjacentHTML('beforeend', '<span class="tag">FT</span>');
-      host.appendChild(f);
+  /* a tabbed slideshow: model tabs, prev / next arrows, dots with a counter, swipe, the arrow keys, and an optional automatic step */
+  function gallery(rootId, groups, render, note, ms){
+    const root = document.getElementById(rootId), st = { g: 0, page: 0, hold: 0 };
+    if (groups.length > 1){
+      const tabs = el('div', 'tabs is-toggle is-rounded is-centered is-small'), ul = el('ul');
+      groups.forEach((g, k) => { const li = el('li', k === 0 ? 'is-active' : ''), a = el('a', '', g.name); a.href = '#' + rootId;
+        a.onclick = e => { e.preventDefault(); touch(st); st.g = k; st.page = 0; [...ul.children].forEach((c, j) => c.className = j === k ? 'is-active' : ''); show(); };
+        li.appendChild(a); ul.appendChild(li); });
+      tabs.appendChild(ul); root.appendChild(tabs);
     }
+    const wrap = el('div', 'slideshow'), stage = el('div'), cap = el('p', 'cap-line'), dots = el('div', 'ss-dots'), foot = el('p', 'demo-note');
+    const prev = el('a', 'ss-arrow prev', '&#10094;'), next = el('a', 'ss-arrow next', '&#10095;');
+    prev.title = 'previous'; next.title = 'next';
+    wrap.append(stage, prev, next); root.append(wrap, cap, dots, foot);
+    const go = p => { touch(st); st.page = p; show(); };
+    prev.onclick = () => go(st.page - 1); next.onclick = () => go(st.page + 1);
+    let x0 = null;
+    wrap.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; touch(st); }, { passive: true });
+    wrap.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 40) go(st.page + (dx < 0 ? 1 : -1)); });
+    const me = { st, go };
+    root.addEventListener('mouseenter', () => active = me); root.addEventListener('touchstart', () => active = me, { passive: true });
+    let hover = false, seen = !window.IntersectionObserver;
+    wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hover = true; });
+    wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hover = false; });
+    if (window.IntersectionObserver) new IntersectionObserver(es => { seen = es[0].isIntersecting; stage.dispatchEvent(new CustomEvent('seen', { detail: seen })); }, { threshold: 0.25 }).observe(wrap);
+    if (!reduceMotion && ms) setInterval(() => { if (seen && !hover && !document.hidden && !(st.hold > Date.now())) { st.page++; show(); } }, ms);
+    function show(){
+      const g = groups[st.g], n = g.items.length;
+      st.page = ((st.page % n) + n) % n;
+      const [key, prompt] = g.items[st.page];
+      render(stage, g, key, prompt, () => seen);
+      cap.textContent = '“' + prompt + '”';
+      dots.innerHTML = '';
+      for (let i = 0; i < n; i++){ const d = el('span', 'ss-dot' + (i === st.page ? ' on' : '')); d.onclick = () => go(i); dots.appendChild(d); }
+      dots.appendChild(el('span', 'ss-count', (st.page + 1) + ' / ' + n));
+      foot.innerHTML = note(g);
+      const nx = g.items[(st.page + 1) % n][0]; if (render.warm) render.warm(g, nx);
+    }
+    show();
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') lb.classList.remove('is-active');
+    if (!active || lb.classList.contains('is-active')) return;
+    if (e.key === 'ArrowLeft'){ active.go(active.st.page - 1); e.preventDefault(); }
+    if (e.key === 'ArrowRight'){ active.go(active.st.page + 1); e.preventDefault(); }
   });
-  io.unobserve(host); io.observe(host);
-}
 
-function tabs(host, groups, onPick) {
-  host.innerHTML = '';
-  const all = [];
-  groups.forEach(([label, items]) => {
-    const g = document.createElement('div'); g.className = 'tabgroup';
-    g.innerHTML = `<span class="tablabel">${label}</span>`;
-    items.forEach(it => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'tab'; b.setAttribute('role', 'tab');
-      b.textContent = it.label; b.setAttribute('aria-selected', 'false');
-      b.onclick = () => { all.forEach(x => x.setAttribute('aria-selected', String(x === b))); onPick(it); };
-      all.push(b); g.appendChild(b);
+  /* image slide: the student grid and the ReDiverse grid, six seeds each */
+  const warmed = new Set();
+  function imgSlide(stage, g, key, prompt){
+    const pair = el('div', 'img-pair');
+    [['student', `4-step student (${g.student})`, ''], ['rediverse', 'ReDiverse', 'ours']].forEach(([m, lab, cls]) => {
+      const f = el('figure', cls), grid = el('div', 'g6');
+      f.appendChild(el('div', 'hd ' + cls, lab));
+      for (let i = 0; i < 6; i++){
+        const im = el('img'); im.src = `${A}img/${key}/${m}_${i}.jpg`; im.width = 1024; im.height = 1024; im.decoding = 'async';
+        im.alt = `${lab}, seed ${i + 1}: ${prompt}`; im.onclick = () => zoom(im.src, im.alt); grid.appendChild(im);
+      }
+      f.appendChild(grid); pair.appendChild(f);
     });
-    host.appendChild(g);
-  });
-  all[0].setAttribute('aria-selected', 'true'); onPick(groups[0][1][0]);
-}
+    stage.replaceChildren(pair);
+  }
+  imgSlide.warm = (g, key) => { if (warmed.has(key)) return; warmed.add(key);
+    ['student', 'rediverse'].forEach(m => { for (let i = 0; i < 6; i++){ const im = new Image(); im.src = `${A}img/${key}/${m}_${i}.jpg`; } }); };
 
-/* Video examples (the paper's teaser prompts first); column i holds the student and ReDiverse clips of the same noise. */
-const WAN = { w: 832, h: 480 }, H3 = { w: 1344, h: 768 };
-const FT5 = Array(5).fill('FT'), FULL5 = Array(5).fill('FT+TF');
-const VIDS = [
-  ['MiniMax-H3', [{ key: 'h3_gwen', label: 'reading', size: H3, v: FULL5, prompt: 'Gwen Stacy reading a book, animated style' },
-                  { key: 'h3_balloon', label: 'balloon', size: H3, v: FT5, prompt: 'a hot air balloon floating' },
-                  { key: 'h3_cablecar', label: 'cable car', size: H3, v: FT5, prompt: 'a cable car moving' },
-                  { key: 'h3_airplane', label: 'airplane', size: H3, v: ['FT', 'FT+TF', 'FT', 'FT', 'FT'], prompt: 'an airplane accelerating to gain speed' },
-                  { key: 'h3_violin', label: 'violin', size: H3, v: FT5, prompt: 'a musician playing the violin' },
-                  { key: 'h3_penguin', label: 'penguin', size: H3, v: FT5, prompt: 'a penguin walking on ice' }]],
-  ['Wan 2.1', [{ key: 'wan_rabbit', label: 'rabbit', size: WAN, v: FULL5, prompt: 'a fat rabbit wearing a purple robe walking through a fantasy landscape' },
-               { key: 'wan_astronaut', label: 'astronaut', size: WAN, v: FT5, prompt: 'An astronaut flying in space, in super slow motion' },
-               { key: 'wan_paperplane', label: 'paper plane', size: WAN, v: FT5, prompt: 'a paper plane flying' },
-               { key: 'wan_dog', label: 'dog', size: WAN, v: FT5, prompt: 'a dog running happily' },
-               { key: 'wan_fox', label: 'fox', size: WAN, v: FT5, prompt: 'a fox running through the snow' },
-               { key: 'wan_dolphin', label: 'dolphin', size: WAN, v: FT5, prompt: 'a dolphin jumping' }]],
-];
+  /* video slide: the student row above the ReDiverse row; all ten clips restart together and play only while on screen */
+  let liveVids = [];
+  function vidSlide(stage, g, key, prompt, isSeen){
+    liveVids.forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
+    const sc = el('div', 'vid-scroll'), rows = el('div', 'vid-rows');
+    rows.style.setProperty('--n', 5); rows.style.setProperty('--ar', `${g.size.w} / ${g.size.h}`);
+    liveVids = [];
+    [['student', `4-step student (${g.student})`, ''], ['rediverse', 'ReDiverse', 'ours']].forEach(([m, lab, cls]) => {
+      rows.appendChild(el('div', 'hd ' + cls, lab));
+      for (let i = 0; i < 5; i++){
+        const v = el('video'); v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+        v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.width = g.size.w; v.height = g.size.h;
+        v.src = `${A}vid/${key}/${m}_${i}.mp4`; v.setAttribute('aria-label', `${lab}, seed ${i + 1}: ${prompt}`);
+        rows.appendChild(v); liveVids.push(v);
+      }
+    });
+    sc.appendChild(rows); stage.replaceChildren(sc);
+    if (isSeen()) liveVids.forEach(v => v.play().catch(() => {}));
+  }
 
-tabs($('#vidTabs'), VIDS, it => { clipsH($('#vidRows'), it); $('#vidPrompt').textContent = `“${it.prompt}”`; });
+  const vNote = g => `ReDiverse on ${g.name} (4-step ${g.student} student) &nbsp;&middot;&nbsp; top: student, bottom: ReDiverse &nbsp;&middot;&nbsp; each column starts from the same noise`;
+  const iNote = g => `ReDiverse on ${g.name} (4-step ${g.student} student), 1024<sup>2</sup> &nbsp;&middot;&nbsp; the same position in both grids starts from the same noise`;
+  gallery('w-videos', VIDS, vidSlide, vNote, 0);
+  gallery('w-images', IMGS, imgSlide, iNote, 6000);
+  document.querySelector('#w-videos .slideshow > div').addEventListener('seen', e => liveVids.forEach(v => e.detail ? v.play().catch(() => {}) : v.pause()));
 
-/* Image examples, six per prompt (the paper's teaser prompts first); same noise at the same position in both grids. */
-const IMGS = /*IMGS*/[["SDXL", [{"key": "sdxl_dog", "label": "dog", "prompt": "a photo of a dog", "student": "DMD2", "n": 6}, {"key": "sdxl_cat", "label": "cat", "prompt": "a photo of a cat", "student": "DMD2", "n": 6}, {"key": "sdxl_candle", "label": "candle", "prompt": "a candle", "student": "DMD2", "n": 6}, {"key": "sdxl_violin", "label": "violin", "prompt": "a violin", "student": "DMD2", "n": 6}, {"key": "sdxl_parrot", "label": "parrot", "prompt": "a parrot", "student": "DMD2", "n": 6}]], ["SD3", [{"key": "sd3_backpack", "label": "backpack", "prompt": "a photo of a backpack", "student": "TDM", "n": 6}, {"key": "sd3_hat", "label": "hat", "prompt": "a hat", "student": "TDM", "n": 6}, {"key": "sd3_bed", "label": "bed", "prompt": "a photo of a bed", "student": "TDM", "n": 6}, {"key": "sd3_car", "label": "car", "prompt": "a photo of a car", "student": "TDM", "n": 6}, {"key": "sd3_bottle", "label": "bottle", "prompt": "a photo of a bottle", "student": "TDM", "n": 6}]]];
-tabs($('#imgTabs'), IMGS, it => { grids($('#imgPair'), it.key, it.prompt, it.n || 9); $('#imgPrompt').textContent = `“${it.prompt}”`; });
-
+  /* copy BibTeX */
+  const cb = document.querySelector('.copy-bib');
+  cb.onclick = async () => { try { await navigator.clipboard.writeText(document.getElementById('bibtex-code').textContent); cb.textContent = 'Copied'; } catch (e) { cb.textContent = 'Select and copy'; } setTimeout(() => cb.textContent = 'Copy', 2000); };
 })();
 </script>
-
 </body>
 </html>
