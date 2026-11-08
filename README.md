@@ -23,7 +23,8 @@ The page is published with GitHub Pages from `rediverse-distillation/rediverse-d
 `H-furkan/rediverse`, which served the earlier address https://h-furkan.github.io/rediverse/; neither branch is named
 `gh-pages`.
 
-The example lists are `VIDS`, `IMGS` and `CMP` near the bottom of `index.html` (`[key, prompt]` per slide). Image Results
-show each prompt as a student-to-ReDiverse dial: ReDiverse's sample is wiped in over the student's sample of the same noise.
+The example lists are `VIDS`, `IMGS` and `CMP` near the bottom of `index.html` (`[key, prompt]` per slide). Video Results
+and Image Results show each prompt as a student-to-ReDiverse dial: ReDiverse's sample (or clip, played in step) is wiped in
+over the student's sample of the same noise. The Method figures sit side by side.
 
 Local preview: `python3 -m http.server 8000` in this folder, then open http://localhost:8000.

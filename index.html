@@ -80,8 +80,17 @@
   /* the student-to-ReDiverse dial: every tile is one initial noise; ReDiverse's sample is wiped in over the student's */
   .wipe { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 0.5rem; }
   .wipe .tile { position: relative; aspect-ratio: 1 / 1; border-radius: 4px; overflow: hidden; background: #ececec; cursor: zoom-in; }
-  .wipe img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .wipe img.b { clip-path: inset(0 calc(100% - var(--v, 0%)) 0 0); }
+  .wipe .a, .wipe .b { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .wipe .b { clip-path: inset(0 calc(100% - var(--v, 0%)) 0 0); }
+  /* video dial: five clip pairs, three above two */
+  .wipe.vid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .wipe.vid .tile { grid-column: span 2; aspect-ratio: var(--ar, 1.75); cursor: default; }
+  .wipe.vid .tile:nth-child(4) { grid-column: 2 / span 2; }
+  /* method figures side by side */
+  .twofig { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; align-items: start; margin-top: 0.5rem; }
+  .twofig > div { min-width: 0; }
+  .twofig .method-fig { max-width: 100%; }
+  .twofig .fig-cap { font-size: 0.85rem; text-align: left; margin-bottom: 0; }
   .wipe .bar { position: absolute; top: 0; bottom: 0; left: var(--v, 0%); width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 3px rgba(0,0,0,.55); pointer-events: none; }
   .wipe.at-end .bar { display: none; }
   /* video slides: the student row above the ReDiverse row, one seed per column */
@@ -112,6 +121,12 @@
     .side { grid-template-columns: 1fr; }
     .vid-rows { grid-template-columns: repeat(var(--n, 5), minmax(132px, 1fr)); }
     .cmp-rows { grid-template-columns: 5.4rem repeat(var(--n, 6), minmax(92px, 1fr)); }
+    .twofig { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .wipe.vid { grid-template-columns: 1fr 1fr; }
+    .wipe.vid .tile, .wipe.vid .tile:nth-child(4) { grid-column: auto; }
+    .wipe.vid .tile:nth-child(5) { grid-column: 1 / -1; }
     .hr-lines:before, .hr-lines:after { display: none; }
   }
 </style>
@@ -203,7 +218,7 @@
         <div class="columns is-centered has-text-centered">
           <div class="column">
             <h2 class="title is-3 hr-lines">Video Results</h2>
-            <div class="content"><p>A 4-step video student repeats one composition for a prompt. ReDiverse, started from the same noises, changes the subject, the setting and the camera. Every column starts from the same initial noise in both rows.</p></div>
+            <div class="content"><p>A 4-step video student repeats one composition for a prompt. ReDiverse, started from the same noises, changes the subject, the setting and the camera. Each tile is one initial noise: slide from the 4-step student to ReDiverse, or press Sweep, to see both clips of that noise.</p></div>
             <div class="demo-box" id="w-videos"></div>
           </div>
         </div>
@@ -307,10 +322,16 @@
           <div class="column">
             <h2 class="title is-3 hr-lines">Method</h2>
             <div class="content"><p>ReDiverse restores the missing directions at the collapsed block ℓ, in the student's first step only. The two parts can be used alone or together.</p></div>
-            <img class="method-fig" src="assets/fig/method_training.jpg" alt="ReDiverse-FT training diagram" loading="lazy">
-            <p class="fig-cap"><b>ReDiverse-FT.</b> Teacher and student start from the same noise and prompt. A LoRA on the blocks up to ℓ regresses the student's step-1 activation onto the teacher's activation at step τ. Each prompt comes with 16 noises, so matching noise by noise transfers the teacher's variation; the LoRA is active only at the first step.</p>
-            <img class="method-fig" src="assets/fig/method_tf.jpg" alt="ReDiverse-TF inference diagram" loading="lazy">
-            <p class="fig-cap"><b>ReDiverse-TF.</b> Training-free. For each prompt, PCA over the teacher's step-τ activations from N = 25 noises gives directions u<sub>k</sub> and spreads s<sub>k</sub>. Each sample adds Σ<sub>k</sub> α<sub>k</sub> s<sub>k</sub> u<sub>k</sub>, α<sub>k</sub> ~ U[−2, 2], to the student's activation at ℓ in step 1.</p>
+            <div class="twofig">
+              <div>
+                <img class="method-fig" src="assets/fig/method_training.jpg" alt="ReDiverse-FT training diagram" loading="lazy">
+                <p class="fig-cap"><b>ReDiverse-FT.</b> Teacher and student start from the same noise and prompt. A LoRA on the blocks up to ℓ regresses the student's step-1 activation onto the teacher's activation at step τ. Each prompt comes with 16 noises, so matching noise by noise transfers the teacher's variation; the LoRA is active only at the first step.</p>
+              </div>
+              <div>
+                <img class="method-fig" src="assets/fig/method_tf.jpg" alt="ReDiverse-TF inference diagram" loading="lazy">
+                <p class="fig-cap"><b>ReDiverse-TF.</b> Training-free. For each prompt, PCA over the teacher's step-τ activations from N = 25 noises gives directions u<sub>k</sub> and spreads s<sub>k</sub>. Each sample adds Σ<sub>k</sub> α<sub>k</sub> s<sub>k</sub> u<sub>k</sub>, α<sub>k</sub> ~ U[−2, 2], to the student's activation at ℓ in step 1.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -491,16 +512,26 @@
     v.src = src; v.setAttribute('aria-label', label); return v;
   }
 
-  /* Video Results: the student row above the ReDiverse row; column i is noise i in both rows */
-  function vidSlide(stage, g, [key, prompt]){
-    const sc = el('div', 'hscroll'), rows = el('div', 'vid-rows');
-    rows.style.setProperty('--n', 5); rows.style.setProperty('--ar', `${g.size.w} / ${g.size.h}`);
-    [['student', `4-step student (${g.student})`, ''], ['rediverse', 'ReDiverse', 'ours']].forEach(([m, lab, cls]) => {
-      rows.appendChild(el('div', 'hd ' + cls, lab));
-      for (let i = 0; i < 5; i++) rows.appendChild(clip(`${A}vid/${key}/${m}_${i}.mp4`, g.size, `${lab}, seed ${i + 1}: ${prompt}`));
-    });
-    sc.appendChild(rows); stage.replaceChildren(sc);
+  /* Video Results: the same dial as the images. Each tile holds the student's clip and ReDiverse's clip of one noise, playing
+     in step; ReDiverse's clip is wiped in over the student's. */
+  function vidSlide(stage, g, [key, prompt], ctl){
+    const grid = el('div', 'wipe vid'); grid.style.setProperty('--ar', `${g.size.w} / ${g.size.h}`);
+    for (let i = 0; i < 5; i++){
+      const t = el('div', 'tile');
+      const a = clip(`${A}vid/${key}/student_${i}.mp4`, g.size, `4-step student (${g.student}), seed ${i + 1}: ${prompt}`);
+      const b = clip(`${A}vid/${key}/rediverse_${i}.mp4`, g.size, `ReDiverse, seed ${i + 1}: ${prompt}`);
+      a.className = 'a'; b.className = 'b';
+      t.append(a, b, el('span', 'bar')); grid.appendChild(t);
+    }
+    stage.replaceChildren(grid); ctl.attach(grid);
   }
+  /* keep the two clips of every tile on the same frame */
+  setInterval(() => document.querySelectorAll('.wipe.vid .tile').forEach(t => {
+    const [a, b] = t.querySelectorAll('video');
+    if (!a || !b || a.readyState < 2 || b.readyState < 2) return;
+    if (a.paused !== b.paused) (a.paused ? b.pause() : b.play().catch(() => {}));
+    if (Math.abs(a.currentTime - b.currentTime) > 0.08) b.currentTime = a.currentTime;
+  }), 400);
 
   /* Image Results: the student-to-ReDiverse dial. 0 % shows the student's six samples, 100 % ReDiverse's six samples of the same
      noises; in between, ReDiverse's sample is wiped in over the student's in every tile. Each new prompt starts at the student
@@ -576,7 +607,7 @@
   }
 
   gallery('w-videos', VIDS, vidSlide,
-    g => `ReDiverse on ${g.name} (4-step ${g.student} student) &nbsp;&middot;&nbsp; top: student, bottom: ReDiverse &nbsp;&middot;&nbsp; each column starts from the same noise`, 0);
+    g => `ReDiverse on ${g.name} (4-step ${g.student} student) &nbsp;&middot;&nbsp; 0 %: the student's five clips, 100 %: ReDiverse's five clips of the same noises`, 0, wipeDial);
   gallery('w-images', IMGS, imgSlide,
     g => `ReDiverse on ${g.name} (4-step ${g.student} student), 1024<sup>2</sup> &nbsp;&middot;&nbsp; 0 %: the student's six samples, 100 %: ReDiverse's six samples of the same noises`, 7000, wipeDial);
   gallery('w-compare', CMP, cmpSlide,
