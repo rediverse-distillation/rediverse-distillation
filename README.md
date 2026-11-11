@@ -5,13 +5,15 @@ Static site for *Restoring Diversity in Distilled Image and Video Generators by 
 [BudgetPix page](https://karaozgur.com/BudgetPix/) (its `static/css/` and `static/js/` files, fonts, ruled section titles,
 tabbed slideshows). No build step: `index.html`, `static/`, and `assets/` (about 280 MB):
 
-- `assets/demo/`: an animated 55-second overview video (silent, 1080p) at the top of the page.
+- `assets/demo/`: an animated 73-second overview video (silent, 1080p) at the top of the page: the 55-second render
+  re-timed with ffmpeg (the finished state of the dense slides is held longer, the two clip slides play at 0.75x).
 - `assets/img/<key>/{student,rediverse}_{0..5}.jpg`: twelve prompts per model (SDXL, SD3), six seed-matched pairs each at
   native 1024 px. The seven newest per model come from the rated pools of the `ReDiverse_results` Drive folder (seeds picked
   by eye from each prompt's preview). No prompt is used for both models.
-- `assets/vid/<key>/{student,rediverse}_{0..4}.mp4`: eight prompts per model, five seed-matched clips each, at native
-  resolution (Wan 2.1 832x480, MiniMax-H3 1344x768), except `h3_forest`, `h3_candle`, `wan_forest` and `wan_carousel`,
-  which are the reviewer site's 640 px renders (the native clips are on the server).
+- `assets/vid/<key>/{student,rediverse}_{0..4}.mp4`: eight MiniMax-H3 and ten Wan 2.1 prompts, five seed-matched clips
+  each, at native resolution (Wan 2.1 832x480, MiniMax-H3 1344x768), except `h3_forest`, `h3_candle`, `wan_forest`,
+  `wan_carousel`, `wan_hummingbird` and `wan_lion`, which are the reviewer site's 640 px renders (the native clips are on
+  the server).
 - `assets/cmp/`: the Method Comparison section, from the anonymous reviewer site (https://iclr-2027-14418.github.io/,
   downloaded only, never modified): `img/<key>/{student,dpdmd,noiseopt,rediverse}_{0..5}.jpg` (512 px, the same six seeds
   in every row) and `vid/<key>/{student,dfd,rediverse}_{0..4}.mp4`; for `h3_forest`, `h3_candle`, `wan_forest` and
