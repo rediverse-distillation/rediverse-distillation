@@ -27,6 +27,9 @@ The page is published with GitHub Pages from `rediverse-distillation/rediverse-d
 
 The example lists are `VIDS`, `IMGS` and `CMP` near the bottom of `index.html` (`[key, prompt]` per slide). Video Results
 and Image Results show each prompt as a student-to-ReDiverse dial: ReDiverse's sample (or clip, played in step) is wiped in
-over the student's sample of the same noise. The Method figures sit side by side.
+over the student's sample of the same noise. An `IMGS` entry `[key, prompt, { lerp: N }]` replaces the wipe of that
+prompt by N interpolation frames `assets/img/<key>/lerp/<tile>_<jj>.jpg` (tile 0..5, jj = 00 for the student to N-1 for
+ReDiverse; each frame is sampled with the student plus jj / (N-1) of ReDiverse's change), cross-faded by the dial; no
+prompt uses it yet. The Method figures sit side by side.
 
 Local preview: `python3 -m http.server 8000` in this folder, then open http://localhost:8000.

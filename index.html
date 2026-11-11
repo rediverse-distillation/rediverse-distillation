@@ -94,6 +94,9 @@
   .twofig .fig-cap { font-size: 0.85rem; text-align: left; margin-bottom: 0; }
   .wipe .bar { position: absolute; top: 0; bottom: 0; left: var(--v, 0%); width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 3px rgba(0,0,0,.55); pointer-events: none; }
   .wipe.at-end .bar { display: none; }
+  /* interpolation mode (a prompt with rendered frames): the dial walks through student-to-ReDiverse weight blends */
+  .wipe.lerp .b { clip-path: none; opacity: var(--f, 0); }
+  .wipe.lerp .bar { display: none; }
   /* video slides: the student row above the ReDiverse row, one seed per column */
   .hscroll { overflow-x: auto; }
   .vid-rows { display: grid; grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); gap: 4px; margin-top: 0.5rem; }
@@ -547,7 +550,8 @@
     const sl = row.querySelector('.slider'), pct = row.querySelector('.pct'), tag = row.querySelector('.state');
     const play = row.querySelector('.play'), lab = play.querySelector('span:last-child');      // Font Awesome swaps <i> for <svg>: touch the label only
     let v = 0, raf = null, sweeping = false, token = 0, grid = null, student = 'student';
-    const paint = () => { if (!grid) return; grid.style.setProperty('--v', v + '%'); grid.classList.toggle('at-end', v <= 0 || v >= 100); };
+    const paint = () => { if (!grid) return; if (grid.lerpTo) grid.lerpTo(v); else grid.style.setProperty('--v', v + '%');
+      grid.classList.toggle('at-end', v <= 0 || v >= 100); };
     const set = x => { v = Math.round(Math.max(0, Math.min(100, x)) * 10) / 10; sl.value = v; pct.textContent = Math.round(v);
       tag.textContent = v <= 0 ? `4-step student (${student})` : v >= 100 ? 'ReDiverse' : 'student → ReDiverse'; paint(); };
     const halt = () => { token++; if (raf) cancelAnimationFrame(raf); raf = null; };
@@ -572,7 +576,9 @@
       seen(on){ if (on && !introduced && !sweeping && !reduceMotion){ introduced = true; intro(); } } };
   }
   const warmed = new Set();
-  function imgSlide(stage, g, [key, prompt], ctl){
+  const lerpSrc = (key, i, j) => `${A}img/${key}/lerp/${i}_${String(j).padStart(2, '0')}.jpg`;
+  function imgSlide(stage, g, [key, prompt, opt], ctl){
+    if (opt && opt.lerp) return lerpSlide(stage, g, key, prompt, opt.lerp, ctl);
     const grid = el('div', 'wipe');
     for (let i = 0; i < 6; i++){
       const t = el('div', 'tile'), a = el('img', 'a'), b = el('img', 'b');
@@ -585,7 +591,25 @@
     }
     stage.replaceChildren(grid); ctl.attach(grid);
   }
-  imgSlide.warm = (g, [key]) => { if (warmed.has(key)) return; warmed.add(key);
+  /* Interpolation mode: frame jj of a tile is the same noise sampled with the student weights plus jj / (N-1) of ReDiverse's
+     change (the FT adapter scaled, the TF injection scaled by the same factor); the dial cross-fades the two nearest frames. */
+  function lerpSlide(stage, g, key, prompt, n, ctl){
+    const grid = el('div', 'wipe lerp'), tiles = [];
+    for (let i = 0; i < 6; i++){
+      const t = el('div', 'tile'), a = el('img', 'a'), b = el('img', 'b');
+      a.width = b.width = 1024; a.height = b.height = 1024; a.decoding = b.decoding = 'async';
+      a.alt = b.alt = `seed ${i + 1}: ${prompt}`;
+      t.append(a, b); grid.appendChild(t); tiles.push([a, b]);
+      t.onclick = () => { const j = Math.round(grid.pos || 0); zoom(j === 0 ? `${A}img/${key}/student_${i}.jpg` : j === n - 1 ? `${A}img/${key}/rediverse_${i}.jpg` : lerpSrc(key, i, j), a.alt); };
+    }
+    grid.lerpTo = v => { const p = v / 100 * (n - 1), k = Math.min(n - 2, Math.floor(p)); grid.pos = p;
+      tiles.forEach(([a, b], i) => { const sa = lerpSrc(key, i, k), sb = lerpSrc(key, i, k + 1);
+        if (!a.src.endsWith(sa)) a.src = sa; if (!b.src.endsWith(sb)) b.src = sb; });
+      grid.style.setProperty('--f', (p - k).toFixed(3)); };
+    stage.replaceChildren(grid); ctl.attach(grid);
+  }
+  imgSlide.warm = (g, [key, , opt]) => { if (warmed.has(key)) return; warmed.add(key);
+    if (opt && opt.lerp){ for (let i = 0; i < 6; i++) for (let j = 0; j < opt.lerp; j++){ const im = new Image(); im.src = lerpSrc(key, i, j); } return; }
     ['student', 'rediverse'].forEach(m => { for (let i = 0; i < 6; i++){ const im = new Image(); im.src = `${A}img/${key}/${m}_${i}.jpg`; } }); };
 
   /* Method Comparison: one row per method, one seed per column */
