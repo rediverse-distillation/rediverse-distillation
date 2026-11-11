@@ -21,9 +21,8 @@ tabbed slideshows). No build step: `index.html`, `static/`, and `assets/` (about
 - `assets/fig/`: figures from the paper.
 
 The page is published with GitHub Pages from `rediverse-distillation/rediverse-distillation` (Deploy from a branch ->
-`main` / root) at https://rediverse-distillation.github.io/rediverse-distillation/. Pushing to that branch republishes the page. The same history is the `website` branch of
-`H-furkan/rediverse`, which served the earlier address https://h-furkan.github.io/rediverse/; neither branch is named
-`gh-pages`.
+`main` / root) at https://rediverse-distillation.github.io/rediverse-distillation/, its only address. Pushing to that
+branch republishes the page; the branch is not named `gh-pages`.
 
 The example lists are `VIDS`, `IMGS` and `CMP` near the bottom of `index.html` (`[key, prompt]` per slide). Video Results
 and Image Results show each prompt as a student-to-ReDiverse dial: ReDiverse's sample (or clip, played in step) is wiped in
