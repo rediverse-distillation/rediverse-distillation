@@ -5,11 +5,15 @@ Static site for *Restoring Diversity in Distilled Image and Video Generators by 
 [BudgetPix page](https://karaozgur.com/BudgetPix/) (its `static/css/` and `static/js/` files, fonts, ruled section titles,
 tabbed slideshows). No build step: `index.html`, `static/`, and `assets/` (about 280 MB):
 
-- `assets/demo/`: a 74-second overview video (silent, 1080p) at the top of the page, results first. It opens on the
-  paper's Istanbul ferry prompt (MiniMax-H3 Turbo): the student's clips, why diversity collapses, the ReDiverse clips and
-  how ReDiverse works. Then come the authors and affiliations, video results (MiniMax-H3, Wan 2.1) and image results
-  (SDXL, SD3), each as a student row above a seed-matched ReDiverse row. The Istanbul clips are the paper's Fig. 7
-  renders (640 px) from the reviewer site; the other clips and images are the ones in `assets/vid/` and `assets/img/`.
+- `assets/demo/`: a 63-second overview video (silent, 1080p) at the top of the page, results first. It opens on two
+  MiniMax-H3 Turbo prompts side by side (a hot air balloon and the paper's Istanbul ferry): the student's clips, then a
+  before/after slider that reveals the ReDiverse clips. A Manim animation shows why diversity collapses and how ReDiverse
+  restores it. Then one page per student model, two prompts each, again with the slider: MiniMax-H3 (airplane, autumn
+  forest), Wan 2.1 lightx2v (dog, fox), SDXL DMD2 (violin, candle), SD3 TDM (backpack, bed) and SDXL-Turbo (cat, potted
+  plant). It ends on the paper title, authors and affiliations. Every tile pairs a student sample with the ReDiverse sample
+  of the same seed, except the Istanbul grid, which, like the paper's Fig. 7, pairs different clips. The Wan clips are
+  motion-interpolated from 16 to 32 fps for smooth playback. The SDXL DMD2 images are the paper's Fig. 21 samples, and the
+  SDXL-Turbo images come from additional runs; the other clips and images are the ones in `assets/vid/` and `assets/img/`.
   `rediverse_overview.jpg` is its poster and the page's preview image.
 - `assets/img/<key>/{student,rediverse}_{0..5}.jpg`: twelve prompts per model (SDXL, SD3), six seed-matched pairs each at
   native 1024 px. The seven newest per model come from the rated pools of the `ReDiverse_results` Drive folder (seeds picked
