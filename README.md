@@ -5,8 +5,12 @@ Static site for *Restoring Diversity in Distilled Image and Video Generators by 
 [BudgetPix page](https://karaozgur.com/BudgetPix/) (its `static/css/` and `static/js/` files, fonts, ruled section titles,
 tabbed slideshows). No build step: `index.html`, `static/`, and `assets/` (about 280 MB):
 
-- `assets/demo/`: an animated 73-second overview video (silent, 1080p) at the top of the page: the 55-second render
-  re-timed with ffmpeg (the finished state of the dense slides is held longer, the two clip slides play at 0.75x).
+- `assets/demo/`: a 74-second overview video (silent, 1080p) at the top of the page, results first. It opens on the
+  paper's Istanbul ferry prompt (MiniMax-H3 Turbo): the student's clips, why diversity collapses, the ReDiverse clips and
+  how ReDiverse works. Then come the authors and affiliations, video results (MiniMax-H3, Wan 2.1) and image results
+  (SDXL, SD3), each as a student row above a seed-matched ReDiverse row. The Istanbul clips are the paper's Fig. 7
+  renders (640 px) from the reviewer site; the other clips and images are the ones in `assets/vid/` and `assets/img/`.
+  `rediverse_overview.jpg` is its poster and the page's preview image.
 - `assets/img/<key>/{student,rediverse}_{0..5}.jpg`: twelve prompts per model (SDXL, SD3), six seed-matched pairs each at
   native 1024 px. The seven newest per model come from the rated pools of the `ReDiverse_results` Drive folder (seeds picked
   by eye from each prompt's preview). No prompt is used for both models.
