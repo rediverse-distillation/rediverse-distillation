@@ -9,7 +9,7 @@ tabbed slideshows). No build step: `index.html`, `static/`, and `assets/` (about
   MiniMax-H3 Turbo prompts side by side (a hot air balloon and the paper's Istanbul ferry): the student's clips, then a
   before/after slider that reveals the ReDiverse clips. A Manim animation shows why diversity collapses and how ReDiverse
   restores it. Then one page per student model, two prompts each, again with the slider: MiniMax-H3 (airplane, autumn
-  forest), Wan 2.1 lightx2v (dog, astronaut), SDXL DMD2 (dog, violin), SD3 TDM (backpack, bed) and SDXL-Turbo (cat,
+  forest), Wan 2.1 lightx2v (dog, dolphin), SDXL DMD2 (dog, violin), SD3 TDM (backpack, bed) and SDXL-Turbo (cat,
   fork). It ends on the paper title, authors and affiliations. Every tile pairs a student sample with the ReDiverse sample
   of the same seed, except the Istanbul grid, which, like the paper's Fig. 7, pairs different clips. The Wan clips are
   motion-interpolated from 16 to 32 fps for smooth playback. The SDXL DMD2 violin is the paper's Fig. 21 sample, and the
