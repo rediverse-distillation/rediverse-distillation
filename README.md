@@ -5,8 +5,8 @@ Static site for *Restoring Diversity in Distilled Image and Video Generators by 
 [BudgetPix page](https://karaozgur.com/BudgetPix/) (its `static/css/` and `static/js/` files, fonts, ruled section titles,
 tabbed slideshows). No build step: `index.html`, `static/`, and `assets/` (about 310 MB):
 
-- `assets/demo/`: a 97-second overview video (silent, 1080p) at the top of the page. After a two-second title it states
-  the problem ("Current distilled models are not diverse."), zooms into a full-screen 2x2 grid of MiniMax-H3 Turbo clips
+- `assets/demo/`: a 97-second overview video (silent, 1080p) at the top of the page. It opens on a two-second title page
+  (title, authors, affiliations, page address), then states the problem ("Current distilled models are not diverse."), zooms into a full-screen 2x2 grid of MiniMax-H3 Turbo clips
   (an airplane, then the paper's Istanbul ferry), introduces ReDiverse and reveals its clips with a before/after slider
   that sweeps across the frame. A Manim animation shows why diversity collapses and how ReDiverse restores it. Then one
   page per student model, each opening on the model's name: MiniMax-H3 (hot air balloon, autumn forest) and Wan 2.1
