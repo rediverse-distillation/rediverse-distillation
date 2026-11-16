@@ -472,7 +472,7 @@ hr {
     max-width: 80%;
     text-align: left;
   }
-  video::-webkit-media-controls {
+  video:not([controls])::-webkit-media-controls {
     display: none;
   }
 }
