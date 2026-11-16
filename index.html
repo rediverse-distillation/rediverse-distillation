@@ -434,6 +434,7 @@
   const A = 'assets/';
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
   const reduceMotion = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const studentName = g => g.label || `4-step student (${g.student})`;     // a group with a label is named by it alone
   const IDLE_MS = 8000, touch = st => { st.hold = Date.now() + IDLE_MS; };     // a manual step holds the automatic ones for a while
   let active = null;                       // the slideshow the arrow keys drive: the one last hovered or touched
 
@@ -446,6 +447,12 @@
       ['h3_cablecar', 'a cable car moving'], ['h3_airplane', 'an airplane accelerating to gain speed'],
       ['h3_violin', 'a musician playing the violin'], ['h3_penguin', 'a penguin walking on ice'],
       ['h3_forest', 'a forest in autumn'], ['h3_candle', 'a candle flickering']] },
+    { name: 'Pika-Flex', student: 'Pika-Flex', label: 'Pika-Flex', about: 'a fine-tuned MiniMax-H3', size: H3, items: [
+      ['pika_shuttle', 'A space shuttle launching into orbit, with flames and smoke billowing out from the engines'],
+      ['pika_motorcycle', 'a motorcycle turning a corner'], ['pika_ironman', 'Iron Man flying in the sky'],
+      ['pika_corgi', 'A corgi is playing drum kit.'], ['pika_astronaut', 'An astronaut flying in space, oil painting'],
+      ['pika_spaceship', 'Hyper-realistic spaceship landing on Mars'], ['pika_horse', 'a horse running to join a herd of its kind'],
+      ['pika_fireworks', 'A drone view of celebration with Christmas tree and fireworks, starry sky - background.']] },
     { name: 'Wan 2.1', student: 'lightx2v', size: WAN, items: [
       ['wan_rabbit', 'a fat rabbit wearing a purple robe walking through a fantasy landscape'],
       ['wan_astronaut', 'An astronaut flying in space, in super slow motion'], ['wan_paperplane', 'a paper plane flying'],
@@ -555,7 +562,7 @@
     const grid = el('div', 'wipe vid'); grid.style.setProperty('--ar', `${g.size.w} / ${g.size.h}`);
     for (let i = 0; i < 5; i++){
       const t = el('div', 'tile');
-      const a = clip(`${A}vid/${key}/student_${i}.mp4`, g.size, `4-step student (${g.student}), seed ${i + 1}: ${prompt}`);
+      const a = clip(`${A}vid/${key}/student_${i}.mp4`, g.size, `${studentName(g)}, seed ${i + 1}: ${prompt}`);
       const b = clip(`${A}vid/${key}/rediverse_${i}.mp4`, g.size, `ReDiverse, seed ${i + 1}: ${prompt}`);
       a.className = 'a'; b.className = 'b';
       t.append(a, b, el('span', 'bar')); grid.appendChild(t);
@@ -577,15 +584,15 @@
     const row = el('div', 'columns is-vcentered is-mobile is-variable is-1 dial'); row.style.marginBottom = '0';
     row.innerHTML = `<div class="column is-narrow dial-readout d-read"><span class="pct">0</span>% <small>ReDiverse</small></div>
       <div class="column is-narrow d-tag"><span class="tag is-dark state">4-step student</span></div>
-      <div class="column d-slide"><input class="slider is-fullwidth is-dark is-small" step="1" min="0" max="100" value="0" type="range" aria-label="From the 4-step student to ReDiverse"><div class="dial-ends"><span>4-step student</span><span>ReDiverse</span></div></div>
+      <div class="column d-slide"><input class="slider is-fullwidth is-dark is-small" step="1" min="0" max="100" value="0" type="range" aria-label="From the 4-step student to ReDiverse"><div class="dial-ends"><span class="end-a">4-step student</span><span>ReDiverse</span></div></div>
       <div class="column is-narrow d-play"><button class="button is-rounded is-dark is-small play" type="button"><span class="icon is-small"><i class="fas fa-play"></i></span><span>Sweep</span></button></div>`;
-    const sl = row.querySelector('.slider'), pct = row.querySelector('.pct'), tag = row.querySelector('.state');
+    const sl = row.querySelector('.slider'), pct = row.querySelector('.pct'), tag = row.querySelector('.state'), endA = row.querySelector('.end-a');
     const play = row.querySelector('.play'), lab = play.querySelector('span:last-child');      // Font Awesome swaps <i> for <svg>: touch the label only
-    let v = 0, raf = null, sweeping = false, token = 0, grid = null, student = 'student';
+    let v = 0, raf = null, sweeping = false, token = 0, grid = null, studentTag = '4-step student';
     const paint = () => { if (!grid) return; if (grid.lerpTo) grid.lerpTo(v); else grid.style.setProperty('--v', v + '%');
       grid.classList.toggle('at-end', v <= 0 || v >= 100); };
     const set = x => { v = Math.round(Math.max(0, Math.min(100, x)) * 10) / 10; sl.value = v; pct.textContent = Math.round(v);
-      tag.textContent = v <= 0 ? `4-step student (${student})` : v >= 100 ? 'ReDiverse' : 'student → ReDiverse'; paint(); };
+      tag.textContent = v <= 0 ? studentTag : v >= 100 ? 'ReDiverse' : 'student → ReDiverse'; paint(); };
     const halt = () => { token++; if (raf) cancelAnimationFrame(raf); raf = null; };
     const stopSweep = () => { sweeping = false; lab.textContent = 'Sweep'; };
     const animate = (to, dur, then) => { const from = v, t0 = performance.now(), tok = token;
@@ -601,7 +608,7 @@
       loop(); };
     let introduced = false;
     return { row, value: () => v, attach: gEl => { grid = gEl; paint(); }, busy: () => sweeping || !!raf,
-      shown(g, seen){ student = g.student; if (sweeping) return;
+      shown(g, seen){ studentTag = studentName(g); endA.textContent = g.label || '4-step student'; if (sweeping) return;
         if (reduceMotion || !seen){ halt(); set(seen || introduced ? 100 : 0); return; }
         if (st.hold > Date.now() && introduced) { set(v); return; }
         introduced = true; intro(); },
@@ -665,7 +672,7 @@
   }
 
   gallery('w-videos', VIDS, vidSlide,
-    g => `ReDiverse on ${g.name} (4-step ${g.student} student) &nbsp;&middot;&nbsp; 0 %: the student's five clips, 100 %: ReDiverse's five clips of the same noises`, 0, wipeDial);
+    g => `ReDiverse on ${g.label ? g.name + (g.about ? ` (${g.about})` : '') : `${g.name} (4-step ${g.student} student)`} &nbsp;&middot;&nbsp; 0 %: ${g.label ? g.label + "'s" : "the student's"} five clips, 100 %: ReDiverse's five clips of the same noises`, 0, wipeDial);
   gallery('w-images', IMGS, imgSlide,
     g => `ReDiverse on ${g.name} (4-step ${g.student} student), 1024<sup>2</sup> &nbsp;&middot;&nbsp; 0 %: the student's six samples, 100 %: ReDiverse's six samples of the same noises`, 7000, wipeDial);
   gallery('w-compare', CMP, cmpSlide,
