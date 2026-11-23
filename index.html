@@ -241,6 +241,7 @@
           <h2 class="title is-3 hr-lines">News</h2>
           <div class="content has-text-left">
             <ul>
+              <li><b>[11/2026]</b> &#129303; <a href="https://huggingface.co/ReDiverse/Krea-2-ReDiverse" target="_blank">Krea 2 ReDiverse</a>: ReDiverse for <a href="https://huggingface.co/krea/Krea-2-Turbo" target="_blank">Krea 2 Turbo</a> (8 steps), with Krea 2 Raw as the teacher. The ReDiverse-FT adapter and ReDiverse-TF steering bring Turbo to the teacher's diversity in a sweep on six GenEval prompts while keeping its ImageReward. Examples in <a href="#images">Image Results</a> (Krea 2 tab); code in <a href="https://github.com/H-furkan/rediverse/tree/main/krea2" target="_blank">krea2/</a>.</li>
               <li><b>[11/2026]</b> &#129303; <a href="https://huggingface.co/spaces/ozgurkara/ReDiverse-MiniMax-H3" target="_blank">Demo</a>: MiniMax-H3 with the ReDiverse-FT adapter, on Hugging Face Spaces.</li>
               <li><b>[11/2026]</b> ComfyUI versions of the MiniMax-H3 and Pika H3 Flex adapters, converted by <a href="https://huggingface.co/kabachuha" target="_blank">kabachuha</a>: &#129303; <a href="https://huggingface.co/kabachuha/ReDiverse-MiniMax-H3-Comfy" target="_blank">ReDiverse-MiniMax-H3-Comfy</a> and &#129303; <a href="https://huggingface.co/kabachuha/ReDiverse-Pika-H3-Flex-Comfy" target="_blank">ReDiverse-Pika-H3-Flex-Comfy</a>, with example workflows.</li>
               <li><b>[11/2026]</b> The ReDiverse-FT adapter for <a href="https://huggingface.co/Pika-Labs/Pika-H3-Flex" target="_blank">Pika H3 Flex</a> on &#129303; <a href="https://huggingface.co/ReDiverse/ReDiverse-Pika-H3-Flex" target="_blank">Hugging Face</a>, with its own generation script.</li>
@@ -496,6 +497,11 @@
       ['sd3_bottle', 'a photo of a bottle'], ['sd3_vases', 'a photo of two vases'], ['sd3_bird', 'a photo of a bird'],
       ['sd3_person', 'a photo of a person'], ['sd3_book', 'a photo of a book'], ['sd3_chair', 'a photo of a chair'],
       ['sd3_mouse', 'a photo of an orange computer mouse'], ['sd3_boat', 'a photo of a yellow boat']] },
+    { name: 'Krea 2', student: 'Krea 2 Turbo', label: 'Krea 2 Turbo', about: '8-step Krea 2 Turbo, teacher Krea 2 Raw', items: [
+      ['krea2_wizard', 'a wizard casting a spell'], ['krea2_ramen', 'a bowl of ramen'], ['krea2_train', 'a train crossing a bridge'],
+      ['krea2_robot', 'a robot in a kitchen'], ['krea2_sailboat', 'a sailboat at sunset'], ['krea2_teddy', 'a teddy bear on a bed'],
+      ['krea2_sneakers', 'a pair of sneakers'], ['krea2_castle', 'a castle on a hill'], ['krea2_kite', 'a child flying a kite'],
+      ['krea2_violin', 'a woman playing the violin'], ['krea2_car', 'a red sports car on a road'], ['krea2_astronaut', 'a portrait of an astronaut']] },
   ];
   const CMP = [
     { name: 'SDXL', kind: 'img', n: 6, rows: [['student', '4-step student (DMD2)'], ['dpdmd', 'DP-DMD'], ['noiseopt', 'Noise Optimization'], ['rediverse', 'ReDiverse']],
@@ -647,7 +653,7 @@
     for (let i = 0; i < 6; i++){
       const t = el('div', 'tile'), a = el('img', 'a'), b = el('img', 'b');
       a.src = `${A}img/${key}/student_${i}.jpg`; b.src = `${A}img/${key}/rediverse_${i}.jpg`;
-      a.alt = `4-step student (${g.student}), seed ${i + 1}: ${prompt}`; b.alt = `ReDiverse, seed ${i + 1}: ${prompt}`;
+      a.alt = `${studentName(g)}, seed ${i + 1}: ${prompt}`; b.alt = `ReDiverse, seed ${i + 1}: ${prompt}`;
       a.width = b.width = 1024; a.height = b.height = 1024; a.decoding = b.decoding = 'async';
       t.append(a, b, el('span', 'bar'));
       t.onclick = e => { const r = t.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 100, im = x < ctl.value() ? b : a; zoom(im.src, im.alt); };
@@ -699,7 +705,7 @@
   gallery('w-videos', VIDS, vidSlide,
     g => `ReDiverse on ${g.label ? g.name + (g.about ? ` (${g.about})` : '') : `${g.name} (4-step ${g.student} student)`} &nbsp;&middot;&nbsp; 0 %: ${g.label ? g.label + "'s" : "the student's"} five clips, 100 %: ReDiverse's five clips of the same noises`, 0, wipeDial);
   gallery('w-images', IMGS, imgSlide,
-    g => `ReDiverse on ${g.name} (4-step ${g.student} student), 1024<sup>2</sup> &nbsp;&middot;&nbsp; 0 %: the student's six samples, 100 %: ReDiverse's six samples of the same noises`, 7000, wipeDial);
+    g => `ReDiverse on ${g.label ? g.name + (g.about ? ` (${g.about})` : '') : `${g.name} (4-step ${g.student} student)`}, 1024<sup>2</sup> &nbsp;&middot;&nbsp; 0 %: ${g.label ? g.label + "'s" : "the student's"} six samples, 100 %: ReDiverse's six samples of the same noises`, 7000, wipeDial);
   gallery('w-compare', CMP, cmpSlide,
     g => g.kind === 'img' ? `${g.name}, text-to-image &nbsp;&middot;&nbsp; <span class="cmp-d">one row per method, the same six noises in every row</span><span class="cmp-m">one column per method, the same six noises in every column</span>`
                           : `${g.name}, text-to-video &nbsp;&middot;&nbsp; <span class="cmp-d">one row per method, the same five noises in every row</span><span class="cmp-m">one column per method, the same five noises in every column</span>`, 0);
